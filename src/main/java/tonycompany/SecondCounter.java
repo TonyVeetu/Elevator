@@ -1,10 +1,12 @@
-public class MyRun extends Thread {
+package tonycompany;
 
-    private boolean isInter = false;
+public class SecondCounter extends Thread {
+
+    private boolean isIterable = false;
 
     public void run(){
         while(true) {
-            if(!isInter) {
+            if(!isIterable) {
                 System.out.println("\t\t" + " dzin! " + 1 + " second!");
                 try {
                     Thread.sleep(1000);
@@ -17,7 +19,7 @@ public class MyRun extends Thread {
         }
     }
 
-    public void setInter(){
-        isInter = true;
+    public void setIsIterable(){
+        isIterable = true;
     }
 }

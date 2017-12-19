@@ -1,3 +1,5 @@
+package tonycompany;
+
 public interface Move {
     void up();
     void down();

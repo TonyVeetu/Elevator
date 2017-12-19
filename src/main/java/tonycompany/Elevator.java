@@ -1,9 +1,11 @@
+package tonycompany;
+
 import java.util.*;
 
 public class Elevator implements Move{
     private int countOfFloors;
-    private int speed;
-    private int floorHeight;
+    private double speed;
+    private double floorHeight;
     private int gapOpenClose;
 
     private int currentFloor = 0;
@@ -11,7 +13,7 @@ public class Elevator implements Move{
     private Queue<Integer> queueOfFloors;
 
 
-    public Elevator(int countOfFloors, int speed, int floorHeight, int gapOpenClose){
+    public Elevator(int countOfFloors, double speed, int floorHeight, int gapOpenClose){
         this.countOfFloors = countOfFloors;
         this.speed = speed;
         this.floorHeight = floorHeight;
@@ -25,26 +27,36 @@ public class Elevator implements Move{
         queueOfFloors.add(10);
     }
 
-    public void start(){
-        MyRun myRun = new MyRun();
-        myRun.start();
-        while(!queueOfFloors.isEmpty()){
-            int floor = queueOfFloors.poll();
-            System.out.println("Current floor: " + currentFloor);
-            //TODO правильно поделить!!
-            long timeForMove = (Math.abs(floor - currentFloor)/speed);
-            System.out.println(timeForMove);
-            try {
-                Thread.sleep(timeForMove*1000);
-            }
-            catch (InterruptedException e ){
-                e.printStackTrace();
-            }
-            openAndClose(floor);
-            currentFloor = floor;
+    public void start() throws InterruptedException{
+        SecondCounter counter = new SecondCounter();
+        counter.start();
+        ConsoleIn consoleIn = new ConsoleIn(queueOfFloors);
+        consoleIn.start();
 
+        while(!queueOfFloors.isEmpty()){
+            boolean up = false;
+            int nextFloor = queueOfFloors.poll();
+            if(nextFloor > currentFloor)
+                up = true;
+            else
+                up = false;
+            System.out.println("Current floor: " + currentFloor);
+
+            int countOfFloor = nextFloor - currentFloor;
+            long timeForOneFloor = (long)Math.round(floorHeight/speed)*1000; //TODO test сделать!
+            System.out.println("Time For Move in millisec " + timeForOneFloor*countOfFloor);
+            long prom = timeForOneFloor;
+            for(int i = 0; i < countOfFloor; i++) {
+                Thread.sleep(timeForOneFloor);
+                if(up)
+                    System.out.println("\t"+"Elevator is near with " + (++currentFloor) + " floor");
+                else
+                    System.out.println("\t"+"Elevator is near with " + (--currentFloor) + " floor");
+            }
+            openAndClose(nextFloor);
+            currentFloor = nextFloor;
         }
-        myRun.setInter();
+        counter.setIsIterable();
     }
 
     public void up(){
@@ -69,9 +81,13 @@ public class Elevator implements Move{
 
     public static void main(String[] args){
 
-        Elevator elevator = new Elevator(10, 1,2, 1);
+        Elevator elevator = new Elevator(10, 2.3,2, 2);
         elevator.init();
-        elevator.start();
-
+        try {
+            elevator.start();
+        }
+        catch (InterruptedException e ){
+            e.printStackTrace();
+        }
     }
 }
