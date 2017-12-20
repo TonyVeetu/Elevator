@@ -3,5 +3,5 @@ package tonycompany;
 public interface Move {
     void up();
     void down();
-    void openAndClose(int floor);
+    void openAndClose(int floor) throws InterruptedException;
 }
