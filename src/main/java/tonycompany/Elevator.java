@@ -1,32 +1,28 @@
 package tonycompany;
 
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class Elevator implements Move{
+public class Elevator{
     private int countOfFloors;
     private double speed;
     private double floorHeight;
     private int gapOpenClose;
     private int currentFloor = 0;
     private BlockingQueue<Integer> queueOfFloors;
-    private AtomicBoolean firstInputFromConsole = new AtomicBoolean(false);
+    private AtomicBoolean isIterable;
 
-
-    public Elevator(int countOfFloors, double speed, int floorHeight, int gapOpenClose){
+    public Elevator(int countOfFloors, double speed, double floorHeight, int gapOpenClose, BlockingQueue<Integer> queueOfFloors,  AtomicBoolean isIterable){
         this.countOfFloors = countOfFloors;
         this.speed = speed;
         this.floorHeight = floorHeight;
         this.gapOpenClose = gapOpenClose;
-        queueOfFloors = new ArrayBlockingQueue<Integer>(countOfFloors);
+        this.queueOfFloors = queueOfFloors;
+        this.isIterable = isIterable;
     }
 
     public void start() throws InterruptedException {
-        ConsoleIn consoleIn = new ConsoleIn(queueOfFloors, firstInputFromConsole);
-        consoleIn.start();
-        //Пока не будет получена хотя бы одна команда с консоли!!
-        while (!queueOfFloors.isEmpty() || (!firstInputFromConsole.get())) {
+        while (!isIterable.get()) {
             boolean up;
             int nextFloor = 0;
             try {
@@ -51,37 +47,15 @@ public class Elevator implements Move{
                 else
                     System.out.println("\t" + "Elevator is near with " + (--currentFloor) + " floor");
             }
-            openAndClose(nextFloor);
+            doorOpenClose(nextFloor);
         }
-        consoleIn.setIsIterable();
-
     }
 
-    public void up(){
 
-    }
-
-    public void down(){
-
-    }
-
-    public void openAndClose(int floor) throws InterruptedException {
+    public void doorOpenClose(int floor) throws InterruptedException {
         System.out.println("Open doors on " + floor + " floor!");
         Thread.sleep(gapOpenClose * 1000);
         System.out.println("Close doors on " + floor + " floor");
     }
 
-
-    public static void main(String[] args){
-
-        Elevator elevator = new Elevator(10, 2.3,2, 2);
-        //elevator.init();
-        try {
-            elevator.start();
-        }
-        catch (InterruptedException e ){
-            e.printStackTrace();
-        }
-        System.out.println("end of main!!");
-    }
 }

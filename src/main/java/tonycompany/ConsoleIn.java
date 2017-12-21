@@ -5,26 +5,25 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ConsoleIn extends Thread{
-    private AtomicBoolean isIterable = new AtomicBoolean(false);
-    private AtomicBoolean firstInput;
+    private AtomicBoolean isIterable;
     private  Scanner scanner;
 
-    public ConsoleIn(BlockingQueue<Integer> queue, AtomicBoolean firstInput){
+    public ConsoleIn(BlockingQueue<Integer> queue, AtomicBoolean isIterable){
         this.queue = queue;
-        this.firstInput = firstInput;
+        this.isIterable = isIterable;
         scanner = new Scanner(System.in);
     }
 
     private BlockingQueue<Integer> queue;
 
     public void run() {
-        while (!(isIterable.get())) {
-            if (scanner.hasNext()) {// я не понимаю почему поток здесь сидит!!!!
-                System.out.println("\t\t\t\t"+isIterable.get());
-                if(firstInput.get() == false){
-                    firstInput.set(true);
-                }
+        while (true) {
+            if (scanner.hasNext()) {
                 String str = scanner.nextLine();
+                if(str.equals("Stop")){
+                    isIterable.set(true);
+                    break;
+                }
                 Integer floor = Integer.decode(str);
                 if ((floor >= 0) && (floor <= 10)) {
                     try {
@@ -36,12 +35,5 @@ public class ConsoleIn extends Thread{
             }
         }
         scanner.close();
-
-    }
-    public void setIsIterable(){
-        isIterable.set(true);
-        System.out.println("Set isIterable = "  + isIterable.get());
-        // ??????????
-        //scanner.close();
     }
 }
