@@ -7,9 +7,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class Main {
     public static void main(String[] args) throws InterruptedException{
         //        int countOfFloors = Integer.decode(args[0]);
-//        int speed = Integer.decode(args[1]);
-//        int floorheight = Integer.decode(args[2]);
-//        int gapOpenClose = Integer.decode(args[3]);
+        //        int speed = Integer.decode(args[1]);
+        //        int floorHeight = Integer.decode(args[2]);
+        //        int gapOpenClose = Integer.decode(args[3]);
 
         int countOfFloors = 10;
         double speed = 2.3;
@@ -22,10 +22,7 @@ public class Main {
 
         Elevator elevator = new Elevator(countOfFloors, speed, floorHeight, gapOpenClose, queueOfFloors, isIterable);
         elevator.start();
-
         ConsoleIn consoleIn = new ConsoleIn(queueOfFloors, isIterable);
         consoleIn.start();
-
-        System.out.println("end of main!!");
     }
 }
