@@ -1,4 +1,4 @@
-package tonycompany;
+package uteevbkru;
 
 import java.util.Scanner;
 import java.util.concurrent.BlockingQueue;
@@ -16,14 +16,14 @@ public class ConsoleIn extends Thread {
     }
 
     public void run() {
-        Integer curentFloor = 0;
+        Integer currentFloor = 0;
         while (!isIterable.get()) {
             if (scanner.hasNext()) {
                 String str = scanner.nextLine();
-                if(!check(str, curentFloor))
+                if(!check(str, currentFloor))
                     break;
-                curentFloor = getFloor(str);
-                injectFloor(curentFloor);
+                currentFloor = getFloor(str);
+                injectFloor(currentFloor);
             }
         }
         scanner.close();
