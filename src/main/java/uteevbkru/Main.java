@@ -22,7 +22,7 @@ public class Main {
 
         Elevator elevator = new Elevator(countOfFloors, speed, floorHeight, gapOpenClose, queueOfFloors, isIterable);
         elevator.start();
-        ConsoleIn consoleIn = new ConsoleIn(queueOfFloors, isIterable);
+        ConsoleIn consoleIn = new ConsoleIn(queueOfFloors, isIterable, countOfFloors);
         consoleIn.start();
     }
 }

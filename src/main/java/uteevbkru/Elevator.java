@@ -3,6 +3,9 @@ package uteevbkru;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+/**
+ * This is elevator without Underground floors!
+ */
 public class Elevator extends Thread{
     private int countOfFloors;
     private double speed;
@@ -67,12 +70,12 @@ public class Elevator extends Thread{
         return up;
     }
 
-    private int getCountOfFloors(int nextFloor){
+    public int getCountOfFloors(int nextFloor){
         return Math.abs(nextFloor - currentFloor);
     }
 
-    private long getTimeForOneFloor(){
-        return (long) Math.round(floorHeight / speed) * 1000;
+    public long getTimeForOneFloor(){
+        return Math.round(floorHeight / speed) * 1000;
     }
 
     private void moving(int countOfFloor, long timeForOneFloor, boolean up){

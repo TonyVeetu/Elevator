@@ -5,11 +5,13 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ConsoleIn extends Thread {
+    private int maxFloors;
     private AtomicBoolean isIterable;
     private Scanner scanner;
     private BlockingQueue<Integer> queue;
 
-    public ConsoleIn(BlockingQueue<Integer> queue, AtomicBoolean isIterable) {
+    public ConsoleIn(BlockingQueue<Integer> queue, AtomicBoolean isIterable, int maxFloors) {
+        this.maxFloors = maxFloors;
         this.queue = queue;
         this.isIterable = isIterable;
         scanner = new Scanner(System.in);
@@ -41,13 +43,15 @@ public class ConsoleIn extends Thread {
     }
 
     private void injectFloor(Integer floor){
-        if ((floor >= 0) && (floor <= 10)) {
+        if ((floor >= 0) && (floor <= maxFloors)) {
             try {
                 queue.put(floor);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
+        else
+            System.out.println("Input unreal floor!");
     }
 
     private boolean check(String str, int floor){
