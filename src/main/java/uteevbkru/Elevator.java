@@ -6,16 +6,16 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * This is elevator without Underground floors!
  */
-public class Elevator extends Thread{
-    private int countOfFloors;
-    private double speed;
-    private double floorHeight;
+public class Elevator extends Thread {
+    private final int countOfFloors;
+    private final double speed;
+    private final double floorHeight;
     private int gapOpenClose;
     private int currentFloor = 0;
     private BlockingQueue<Integer> queueOfFloors;
     private AtomicBoolean isIterable;
 
-    public Elevator(int countOfFloors, double speed, double floorHeight, int gapOpenClose, BlockingQueue<Integer> queueOfFloors,  AtomicBoolean isIterable){
+    public Elevator(int countOfFloors, double speed, double floorHeight, int gapOpenClose, BlockingQueue<Integer> queueOfFloors,  AtomicBoolean isIterable) {
         this.countOfFloors = countOfFloors;
         this.speed = speed;
         this.floorHeight = floorHeight;
@@ -30,7 +30,7 @@ public class Elevator extends Thread{
             int nextFloor = nextFloor();
             up = isUpOrDown(nextFloor);
             int countOfFloors = getCountOfFloors(nextFloor);
-            if(countOfFloors > 0) {
+            if (countOfFloors > 0) {
                 long timeForOneFloor = getTimeForOneFloor();
                 System.out.println("Time For Move: " + timeForOneFloor * countOfFloors);
                 moving(countOfFloors, timeForOneFloor, up);
@@ -78,19 +78,19 @@ public class Elevator extends Thread{
         return Math.round(floorHeight / speed) * 1000;
     }
 
-    private void moving(int countOfFloor, long timeForOneFloor, boolean up){
+    private void moving(int countOfFloor, long timeForOneFloor, boolean up) {
         for (int i = 0; i < countOfFloor; i++) {
             try {
                 Thread.sleep(timeForOneFloor);
             }
-            catch (InterruptedException e){
+            catch (InterruptedException e) {
                 e.printStackTrace();
             }
             whereIsElevator(up);
         }
     }
 
-    private void whereIsElevator(boolean up){
+    private void whereIsElevator(boolean up) {
         if (up)
             System.out.println("\t" + "Elevator is near with " + (++currentFloor) + " floor");
         else
