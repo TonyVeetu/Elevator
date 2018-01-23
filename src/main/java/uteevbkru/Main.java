@@ -5,7 +5,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Main {
-    public static void main(String[] args) throws InterruptedException{
+    public static void main(final String[] args) throws InterruptedException {
         //        int countOfFloors = Integer.decode(args[0]);
         //        int speed = Integer.decode(args[1]);
         //        int floorHeight = Integer.decode(args[2]);
@@ -16,7 +16,10 @@ public class Main {
         double floorHeight = 2.0;
         int gapOpenClose = 2;
 
-        int capacityOfQueue = countOfFloors;//Не может очередь быть больше количества этажей в подьезде!
+        /**
+         Не может очередь быть больше количества этажей в подьезде!
+         */
+        int capacityOfQueue = countOfFloors;
         BlockingQueue<Integer> queueOfFloors = new ArrayBlockingQueue<Integer>(capacityOfQueue);
         AtomicBoolean isIterable = new AtomicBoolean(false);
 

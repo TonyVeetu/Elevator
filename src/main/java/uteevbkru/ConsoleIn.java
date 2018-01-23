@@ -10,7 +10,7 @@ public class ConsoleIn extends Thread {
     private Scanner scanner;
     private BlockingQueue<Integer> queue;
 
-    public ConsoleIn(BlockingQueue<Integer> queue, AtomicBoolean isIterable, int maxFloors) {
+    public ConsoleIn(final BlockingQueue<Integer> queue, final AtomicBoolean isIterable, final int maxFloors) {
         this.maxFloors = maxFloors;
         this.queue = queue;
         this.isIterable = isIterable;
@@ -22,8 +22,9 @@ public class ConsoleIn extends Thread {
         while (!isIterable.get()) {
             if (scanner.hasNext()) {
                 String str = scanner.nextLine();
-                if(!check(str, currentFloor))
+                if (!check(str, currentFloor)) {
                     break;
+                }
                 currentFloor = getFloor(str);
                 injectFloor(currentFloor);
             }
@@ -32,7 +33,7 @@ public class ConsoleIn extends Thread {
     }
 
 
-    private Integer getFloor(String str) {
+    private Integer getFloor(final String str) {
         Integer floor = 0;
         try {
             floor = Integer.decode(str);
@@ -42,20 +43,20 @@ public class ConsoleIn extends Thread {
         return floor;
     }
 
-    private void injectFloor(Integer floor){
+    private void injectFloor(final Integer floor) {
         if ((floor >= 0) && (floor <= maxFloors)) {
             try {
                 queue.put(floor);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-        }
-        else
+        } else {
             System.out.println("Input unreal floor!");
+        }
     }
 
-    private boolean check(String str, int floor){
-        if (str.equals("Stop") || str.equals("stop") || str.equals("стоп")){
+    private boolean check(final String str, final int floor) {
+        if (str.equals("Stop") || str.equals("stop") || str.equals("стоп")) {
             isIterable.set(true);
             injectFloor(floor);
             // второй поток сидит в while и его надо вытащить от туда
