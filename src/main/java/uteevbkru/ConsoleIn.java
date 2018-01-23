@@ -32,8 +32,8 @@ public class ConsoleIn extends Thread {
         scanner.close();
     }
 
-
-    private Integer getFloor(final String str) {
+    //TODO Я НЕ ПОНИМАЮ КАК ТЕСТИРОВАТЬ PRIVATE ФУНКЦИЮ!
+    protected Integer getFloor(final String str) {
         Integer floor = 0;
         try {
             floor = Integer.decode(str);
@@ -43,7 +43,7 @@ public class ConsoleIn extends Thread {
         return floor;
     }
 
-    private void injectFloor(final Integer floor) {
+    protected void injectFloor(final Integer floor) {
         if ((floor >= 0) && (floor <= maxFloors)) {
             try {
                 queue.put(floor);
