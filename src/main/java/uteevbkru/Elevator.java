@@ -4,16 +4,26 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * This is elevator without Underground floors!
+ * Класс Лифт без подземных этажей.
+ * @author Uteev Anton
+ * @version 1.0.1
  */
 public class Elevator extends Thread {
+    /** Количество этажей */
     private int countOfFloors;
+    /** Скорость */
     private double speed;
+    /** Высота этажа */
     private double floorHeight;
+    /** Время на откытие и закрытие дверей на этаже */
     private int gapOpenClose;
+    /** Текущий этаж*/
     private int currentFloor = 0;
+    /** Очередь этажей */
     private BlockingQueue<Integer> queueOfFloors;
+    /** Прерван ли поток*/
     private AtomicBoolean isIterable;
+    /** Количество миллисекуд в секунде */
     private static final int MS = 1000;
 
     public Elevator(final int countOfFloors, final double speed, final double floorHeight, final int gapOpenClose, final BlockingQueue<Integer> queueOfFloors, final AtomicBoolean isIterable) {
@@ -25,6 +35,9 @@ public class Elevator extends Thread {
         this.isIterable = isIterable;
     }
 
+    /**
+     *
+     */
     public void run() {
         while (!isIterable.get()) {
             boolean up;
@@ -41,6 +54,10 @@ public class Elevator extends Thread {
         }
     }
 
+    /**
+     * Функция эмулирует открытие и закрытие дверей.
+     * Выводит в терминал на каком этаже открылись и закрылись двери
+     */
     private void doorOpenClose(final int floor) {
         try {
             System.out.println("Open doors on " + floor + " floor!");
@@ -51,6 +68,9 @@ public class Elevator extends Thread {
         }
     }
 
+    /**
+     * @return - этаж куда необходимо поехать.
+     */
     private int nextFloor() {
         int floor = 0;
         try {
@@ -61,6 +81,12 @@ public class Elevator extends Thread {
         return floor;
     }
 
+    /**
+     * Функция определяет вниз или вверх поедет лифт.
+     * @return
+     * true - движение вверх
+     * false - движеине вниз
+     */
     private boolean isUpOrDown(final int nextFloor) {
         boolean up;
         if (nextFloor > currentFloor) {
