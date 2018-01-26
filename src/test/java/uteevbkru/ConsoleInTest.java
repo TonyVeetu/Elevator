@@ -40,17 +40,4 @@ public class ConsoleInTest {
         Assert.assertEquals(0, floor);
     }
 
-    @Test
-    public void injectFloorTest(){
-        Integer floor = 4;
-        console.injectFloor(floor);
-    }
-
-    @Test
-    public void injectFloorErrorTest(){
-        for(int i = 0; i <= maxFloors; i++) {
-            console.injectFloor(i);
-        }
-    }
-
 }
