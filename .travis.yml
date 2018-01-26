@@ -1,0 +1,25 @@
+language: java
+#jdk:
+# - oraclejdk8
+script: mvn clean verify
+
+after_success:
+	 - echo "Build was successful. $TRAVIS_TEST_RESULT"
+	after_failure:
+	 - echo "Build was failed"
+
+#notifications:
+  # Email notifications are disabled to not annoy anybody.
+  # See http://about.travis-ci.org/docs/user/build-configuration/ to learn more
+  # about configuring notification recipients and more.
+#  webhooks: http://basho-engbot.herokuapp.com/travis?key=a8f477c8cdaabc8118d2a650281ff4a71eff875f
+#  email: false
+
+
+#jdk:
+# - oraclejdk8
+#script:
+#mvn verify
+#after_success:
+#after_failure:
+
