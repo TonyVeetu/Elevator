@@ -1,12 +1,12 @@
 language: java
 #jdk:
 # - oraclejdk8
-script: mvn clean verify
+#script: mvn clean verify
 
-after_success:
-	 - echo "Build was successful. $TRAVIS_TEST_RESULT"
-	after_failure:
-	 - echo "Build was failed"
+#after_success:
+#	 - echo "Build was successful. $TRAVIS_TEST_RESULT"
+#	after_failure:
+#	 - echo "Build was failed"
 
 #notifications:
   # Email notifications are disabled to not annoy anybody.
