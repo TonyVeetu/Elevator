@@ -9,25 +9,26 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * @version 1.0.1
  */
 public class Elevator extends Thread {
-    /** Количество этажей */
+    /* Количество этажей */
     private int countOfFloors;
-    /** Скорость */
+    /* Скорость */
     private double speed;
-    /** Высота этажа */
+    /* Высота этажа */
     private double floorHeight;
-    /** Время на откытие и закрытие дверей на этаже */
+    /* Время на откытие и закрытие дверей на этаже */
     private int gapOpenClose;
-    /** Текущий этаж*/
+    /* Текущий этаж*/
     private int currentFloor = 0;
-    /** Очередь этажей */
+    /* Очередь этажей */
     private BlockingQueue<Integer> queueOfFloors;
-    /** Прерван ли поток*/
+    /* Показывает прерваны ли потоки */
     private AtomicBoolean isIterable;
-    /** Количество миллисекуд в секунде */
+    /* Количество миллисекуд в секунде */
     private static final int MS = 1000;
-    /** Время для одного преодаления одного этажа */
+    /* Время для одного преодаления одного этажа */
     private long timeForOneFloor;
 
+    /** Конструктор */
     public Elevator(final int countOfFloors, final double speed, final double floorHeight, final int gapOpenClose, final BlockingQueue<Integer> queueOfFloors, final AtomicBoolean isIterable) {
         if( !(countOfFloors <= 0 || speed <= 0 || floorHeight <= 0 || gapOpenClose <= 0) ) {
             this.countOfFloors = countOfFloors;
@@ -43,6 +44,7 @@ public class Elevator extends Thread {
         }
     }
 
+    /** Главная функция этого класса */
     public void run() {
         while (!isIterable.get()) {
             int nextFloor = getNextFloor();
