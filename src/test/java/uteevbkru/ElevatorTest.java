@@ -13,7 +13,6 @@ public class ElevatorTest {
     private Elevator elevator;
     AtomicBoolean isIterable = new AtomicBoolean(false);
 
-
     @org.junit.Before
     public void setUp() {
         int countOfFloors = 10;

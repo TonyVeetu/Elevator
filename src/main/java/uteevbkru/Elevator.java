@@ -69,18 +69,14 @@ public class Elevator extends Thread {
         }
     }
 
-    /**
-     * @return - этаж куда необходимо поехать.
-     */
+    /** @return - следующий этаж */
     private int getNextFloor() {
-        //TODO make func shot
-        int floor = 0;
         try {
-            floor = queueOfFloors.take();
+            return queueOfFloors.take();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        return floor;
+        return 0;
     }
 
     /** @return направление движения лифта */
