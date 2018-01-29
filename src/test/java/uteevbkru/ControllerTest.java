@@ -26,6 +26,7 @@ public class ControllerTest {
         elevator = new ElevatorOverTheGround(countOfFloors, speed, floorHeight, gapOpenClose, queueOfFloors, isIterable);
         isIterable = new AtomicBoolean();
         controller = new Controller(elevator, queueOfFloors, isIterable);
+        controller.start();
     }
 
     @Test
@@ -41,5 +42,18 @@ public class ControllerTest {
         int floor = controller.getFloor(strFloor);
         Assert.assertEquals(0, floor);
     }
+
+    @Test
+    public void checkTest(){
+        Assert.assertEquals(false, controller.check("Stop", 5));
+    }
+
+    @Test
+    public void isIterableTest(){
+        Assert.assertEquals(false, controller.getIsIterable());
+        controller.check("Stop", 5);
+        Assert.assertEquals(true, controller.getIsIterable());
+    }
+
 
 }

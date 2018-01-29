@@ -95,7 +95,11 @@ public class ElevatorOverTheGround extends Thread implements Elevator {
         return 0;
     }
 
-    /** @return направление движения лифта */
+    /** @return направление движения лифта
+     *      <code>true</code> если движение вверх
+     *      <code>false</code> если движение вниз
+     *      */
+
     private boolean isUp(final int nextFloor) {
         boolean up;
         if (nextFloor > currentFloor) {

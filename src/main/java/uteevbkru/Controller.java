@@ -43,6 +43,11 @@ public class Controller extends Thread {
         scanner.close();
     }
 
+    /** Возвращает состояние переменной isIterable */
+    protected boolean getIsIterable(){
+        return isIterable.get();
+    }
+
     /** Превращает строковое значение этажа в число */
     protected Integer getFloor(final String str) {
         try {
@@ -65,7 +70,7 @@ public class Controller extends Thread {
     }
 
     /** Останавливает потоки при вводе строки "Stop" */
-    private boolean check(final String str, final int floor) {
+    protected boolean check(final String str, final int floor) {
         if (str.equals("Stop") || str.equals("stop") || str.equals("стоп") || str.equals("Стоп")) {
             isIterable.set(true);
             injectFloor(floor); // Добавляем в очередь предыдущее значение,
