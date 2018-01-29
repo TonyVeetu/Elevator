@@ -25,7 +25,7 @@ public class Elevator extends Thread {
     private AtomicBoolean isIterable;
     /** Количество миллисекуд в секунде */
     private static final int MS = 1000;
-    /** Время для одного преодаления одного этажа*/
+    /** Время для одного преодаления одного этажа */
     private long timeForOneFloor;
 
     public Elevator(final int countOfFloors, final double speed, final double floorHeight, final int gapOpenClose, final BlockingQueue<Integer> queueOfFloors, final AtomicBoolean isIterable) {
@@ -36,7 +36,7 @@ public class Elevator extends Thread {
             this.gapOpenClose = gapOpenClose;
             this.queueOfFloors = queueOfFloors;
             this.isIterable = isIterable;
-            getTimeForOneFloor();
+            findTimeForOneFloor();
         }
         else {
             System.out.println("Uncorrected input data!");//TODO tests
@@ -45,22 +45,21 @@ public class Elevator extends Thread {
 
     public void run() {
         while (!isIterable.get()) {
-            printCurrentFloor();
-            int nextFloor = nextFloor();
+            int nextFloor = getNextFloor();
             boolean up = isUp(nextFloor);
             int floors = getCountOfFloors(nextFloor);
             if (floors != 0) {
                 moving(floors, up);
-                doorOpenClose(nextFloor);
+                openCloseDoors(nextFloor);
             }
         }
     }
 
     /**
      * Эмулирует открытие и закрытие дверей.
-     * Выводит в терминал на каком этаже открылись и закрылись двери
+     * Печатает на каком этаже открылись и закрылись двери.
      */
-    private void doorOpenClose(final int floor) {
+    protected void openCloseDoors(final int floor) {
         try {
             System.out.println("Open doors on " + floor + " floor!");
             Thread.sleep(gapOpenClose * MS);
@@ -73,7 +72,7 @@ public class Elevator extends Thread {
     /**
      * @return - этаж куда необходимо поехать.
      */
-    private int nextFloor() {
+    private int getNextFloor() {
         //TODO make func shot
         int floor = 0;
         try {
@@ -95,7 +94,7 @@ public class Elevator extends Thread {
         return up;
     }
 
-    /** Выводит текущий этаж */
+    /** Печатает текущий этаж */
     private void printCurrentFloor(){
         System.out.println("Current floor: " + currentFloor);
     }
@@ -106,36 +105,35 @@ public class Elevator extends Thread {
     }
 
     /** Расчитывает время необходимое для проезда одного этажа */
-    public void getTimeForOneFloor() {
-        timeForOneFloor=  Math.round(floorHeight / speed) * MS;
+    public void findTimeForOneFloor() {
+        timeForOneFloor = Math.round(floorHeight / speed) * MS;
     }
 
-    /**
-     * Эмитация движения кабины лифта
-     */
-    private void moving(final int countOfFloor, final boolean up) {
-        for (int i = 0; i < countOfFloor; i++) {
+    /** @retun время необходимое для проезда одного этажа */
+    public long getTimeForOneFloor() {
+        return timeForOneFloor;
+    }
+
+    /** Эмитация движения кабины лифта */
+    private void moving(final int countOfFloors, final boolean up) {
+        for (int i = 0; i < countOfFloors; i++) {
             try {
                 Thread.sleep(timeForOneFloor);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            whereIsElevator();
+            printCurrentFloor();
             changeCurrentFloor(up);
         }
     }
 
-    private void whereIsElevator( ) {
-        System.out.println("\t" + "Elevator is near with "
-                + currentFloor + " floor");
-
-    }
-
+    /** Меняет текущий этаж */
     private void changeCurrentFloor( final boolean up){
         if (up) {
             ++currentFloor;
         } else {
             --currentFloor;
         }
+        //TODO сделать паттерн strategy!!
     }
 }
