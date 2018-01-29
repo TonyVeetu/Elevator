@@ -24,6 +24,8 @@ public class ElevatorTest {
         BlockingQueue<Integer> queueOfFloors = new ArrayBlockingQueue<Integer>(capacityOfQueue);
 
         elevator = new Elevator(countOfFloors, speed, floorHeight, gapOpenClose, queueOfFloors, isIterable);
+        queueOfFloors.add(5);
+
     }
 
     @org.junit.After
@@ -39,5 +41,8 @@ public class ElevatorTest {
     public void getCountOfFloorTest(){
         Assert.assertEquals(5, elevator.getCountOfFloors(5));
     }
+
+    @Test
+    public void getNextFloorTest(){Assert.assertEquals(5,elevator.getNextFloor());}
 
 }

@@ -70,7 +70,7 @@ public class Elevator extends Thread {
     }
 
     /** @return - следующий этаж */
-    private int getNextFloor() {
+    protected int getNextFloor() {
         try {
             return queueOfFloors.take();
         } catch (InterruptedException e) {
@@ -130,6 +130,5 @@ public class Elevator extends Thread {
         } else {
             --currentFloor;
         }
-        //TODO сделать паттерн strategy!!
     }
 }
