@@ -7,10 +7,8 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static org.junit.Assert.*;
-
 public class ElevatorTest {
-    private Elevator elevator;
+    private ElevatorOverTheGround elevator;
     AtomicBoolean isIterable = new AtomicBoolean(false);
 
     @org.junit.Before
@@ -23,7 +21,7 @@ public class ElevatorTest {
         int capacityOfQueue = countOfFloors;//Не может очередь быть больше количества этажей в подьезде!
         BlockingQueue<Integer> queueOfFloors = new ArrayBlockingQueue<Integer>(capacityOfQueue);
 
-        elevator = new Elevator(countOfFloors, speed, floorHeight, gapOpenClose, queueOfFloors, isIterable);
+        elevator = new ElevatorOverTheGround(countOfFloors, speed, floorHeight, gapOpenClose, queueOfFloors, isIterable);
         queueOfFloors.add(5);
 
     }

@@ -1,5 +1,7 @@
 package uteevbkru;
 
+import uteevbkru.elevator.Elevator;
+
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -8,30 +10,32 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * @author Uteev Anton
  * @version 1.0.1
  */
-public class Elevator extends Thread {
-    /* Количество этажей */
-    private int countOfFloors;
-    /* Скорость */
+public class ElevatorOverTheGround extends Thread implements Elevator {
+    /** Максимальный этаж */
+    private int maxFloor;
+    /** Минимальный этаж*/
+    private final int minFloor = 0;
+    /** Скорость */
     private double speed;
-    /* Высота этажа */
+    /** Высота этажа */
     private double floorHeight;
-    /* Время на откытие и закрытие дверей на этаже */
+    /** Время на откытие и закрытие дверей на этаже */
     private int gapOpenClose;
-    /* Текущий этаж*/
+    /** Текущий этаж*/
     private int currentFloor = 0;
-    /* Очередь этажей */
+    /** Очередь этажей */
     private BlockingQueue<Integer> queueOfFloors;
-    /* Показывает прерваны ли потоки */
+    /** Показывает прерваны ли потоки */
     private AtomicBoolean isIterable;
-    /* Количество миллисекуд в секунде */
+    /** Количество миллисекуд в секунде */
     private static final int MS = 1000;
-    /* Время для одного преодаления одного этажа */
+    /** Время для одного преодаления одного этажа */
     private long timeForOneFloor;
 
     /** Конструктор */
-    public Elevator(final int countOfFloors, final double speed, final double floorHeight, final int gapOpenClose, final BlockingQueue<Integer> queueOfFloors, final AtomicBoolean isIterable) {
+    public ElevatorOverTheGround(final int countOfFloors, final double speed, final double floorHeight, final int gapOpenClose, final BlockingQueue<Integer> queueOfFloors, final AtomicBoolean isIterable) {
         if( !(countOfFloors <= 0 || speed <= 0 || floorHeight <= 0 || gapOpenClose <= 0) ) {
-            this.countOfFloors = countOfFloors;
+            this.maxFloor = countOfFloors;
             this.speed = speed;
             this.floorHeight = floorHeight;
             this.gapOpenClose = gapOpenClose;
@@ -42,6 +46,16 @@ public class Elevator extends Thread {
         else {
             System.out.println("Uncorrected input data!");//TODO tests
         }
+    }
+
+    /** @return минимальный этаж */
+    public int getMinFloor(){
+        return minFloor;
+    }
+
+    /** @return  максимальный этаж*/
+    public int getMaxFloor(){
+        return maxFloor;
     }
 
     /** Главная функция этого класса */

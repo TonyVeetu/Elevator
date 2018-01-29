@@ -4,16 +4,12 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.IOException;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static org.junit.Assert.*;
-
 public class ConsoleInTest {
-    private ConsoleIn console;
+    private Controller console;
     private BlockingQueue<Integer> queue;
     private AtomicBoolean isIterable;
     private int maxFloors = 10;
@@ -23,7 +19,7 @@ public class ConsoleInTest {
 
         queue = new ArrayBlockingQueue<>(maxFloors);
         isIterable = new AtomicBoolean();
-        console = new ConsoleIn(queue, isIterable, maxFloors);
+        console = new Controller(queue, isIterable, maxFloors);
     }
 
     @Test

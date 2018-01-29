@@ -23,9 +23,9 @@ public class Main {
         BlockingQueue<Integer> queueOfFloors = new ArrayBlockingQueue<Integer>(capacityOfQueue);
         AtomicBoolean isIterable = new AtomicBoolean(false);
 
-        Elevator elevator = new Elevator(countOfFloors, speed, floorHeight, gapOpenClose, queueOfFloors, isIterable);
+        ElevatorOverTheGround elevator = new ElevatorOverTheGround(countOfFloors, speed, floorHeight, gapOpenClose, queueOfFloors, isIterable);
         elevator.start();
-        ConsoleIn consoleIn = new ConsoleIn(queueOfFloors, isIterable, countOfFloors);
-        consoleIn.start();
+        Controller controller = new Controller(elevator , queueOfFloors, isIterable);
+        controller.start();
     }
 }
