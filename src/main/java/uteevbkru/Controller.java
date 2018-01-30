@@ -1,5 +1,7 @@
 package uteevbkru;
 
+import uteevbkru.porch.Porch;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
@@ -19,22 +21,27 @@ public class Controller extends Thread {
     /** Очередь этажей */
     private BlockingQueue<Integer> queue;
     /** Лифт */
-    private ElevatorOverTheGround elevator;
-    /** Файл для чтения  Scanner'ом в тестах*/
+    private ElevatorOverTheGround elevatorOver;
+    /** Файл для чтения Scanner'ом в тестах*/
     File file = new File("./test.txt");
-
+    /** Переменная характеризующая чтение из файла */
     private boolean isFile;
+    /** Подъезд */
+    private Porch porch;
 
-    /** Конструктор для считывания из System.in*/
-    public Controller(final ElevatorOverTheGround elevator , final BlockingQueue<Integer> queue, final AtomicBoolean isIterable) {
-        this.elevator = elevator;
+    /** Конструктор для считывания из System.in */
+    public Controller(final ElevatorOverTheGround elevatorOver, Porch porch, final BlockingQueue<Integer> queue, final AtomicBoolean isIterable) {
+        this.porch = porch;
+        this.elevatorOver = elevatorOver;
         this.queue = queue;
         this.isIterable = isIterable;
         scanner = new Scanner(System.in);
     }
 
-    public Controller(final ElevatorOverTheGround elevator , final BlockingQueue<Integer> queue, final AtomicBoolean isIterable, final boolean isFile) {
-        this.elevator = elevator;
+    /** Конструктор для считывания из файла */
+    public Controller(final ElevatorOverTheGround elevatorOver, Porch porch, final BlockingQueue<Integer> queue, final AtomicBoolean isIterable, final boolean isFile) {
+        this.porch = porch;
+        this.elevatorOver = elevatorOver;
         this.queue = queue;
         this.isIterable = isIterable;
         this.isFile = isFile;
@@ -58,6 +65,7 @@ public class Controller extends Thread {
         scanner.close();
     }
 
+    /** Инициализирует Scanner для чтения из файла */
     protected void initReadFromFile(){
         try {
             scanner = new Scanner(file);
@@ -85,7 +93,7 @@ public class Controller extends Thread {
      */
 
     protected boolean injectFloor(final Integer floor) {
-        if ((floor >= elevator.getMinFloor()) && (floor <= elevator.getMaxFloor())) {
+        if ((floor >= porch.getMinFloor()) && (floor <= porch.getMaxFloor())) {
             try {
                 queue.put(floor);
             } catch (InterruptedException e) {

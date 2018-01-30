@@ -3,6 +3,7 @@ package uteevbkru;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import uteevbkru.porch.Porch;
 
 import java.util.Scanner;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -15,6 +16,7 @@ public class ControllerTest {
     private AtomicBoolean isIterable;
     private BlockingQueue<Integer> queueOfFloors;
     private Scanner scanner;
+    private Porch porch;
 
     @Before
     public void setUp(){
@@ -25,9 +27,10 @@ public class ControllerTest {
 
         int capacityOfQueue = countOfFloors;//Не может очередь быть больше количества этажей в подьезде!
         queueOfFloors = new ArrayBlockingQueue<>(capacityOfQueue);
-        elevator = new ElevatorOverTheGround(countOfFloors, speed, floorHeight, gapOpenClose, queueOfFloors, isIterable);
+        porch = new Porch(countOfFloors, floorHeight);
+        elevator = new ElevatorOverTheGround(porch ,speed, gapOpenClose, queueOfFloors, isIterable);
         isIterable = new AtomicBoolean();
-        controller = new Controller(elevator, queueOfFloors, isIterable, true);
+        controller = new Controller(elevator, porch, queueOfFloors, isIterable, true);
         scanner = new Scanner(System.in);
     }
 

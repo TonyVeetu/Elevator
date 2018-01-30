@@ -1,6 +1,7 @@
 package uteevbkru;
 
 import uteevbkru.elevator.Elevator;
+import uteevbkru.porch.Porch;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -10,17 +11,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * @author Uteev Anton
  * @version 1.0.1
  */
-public class ElevatorOverTheGround extends Thread implements Elevator {
-    /** Максимальный этаж */
-    private int maxFloor;
-    /** Минимальный этаж*/
-    private final int minFloor = 0;
-    /** Скорость */
-    private double speed;
-    /** Высота этажа */
-    private double floorHeight;
-    /** Время на откытие и закрытие дверей на этаже */
-    private int gapOpenClose;
+public class ElevatorOverTheGround extends Elevator implements Runnable {
     /** Текущий этаж*/
     private int currentFloor = 0;
     /** Очередь этажей */
@@ -31,31 +22,43 @@ public class ElevatorOverTheGround extends Thread implements Elevator {
     private static final int MS = 1000;
     /** Время для одного преодаления одного этажа */
     private long timeForOneFloor;
-
+    /** Подъезд */
+    private Porch porch;
+    
     /** Конструктор */
-    public ElevatorOverTheGround(final int countOfFloors, final double speed, final double floorHeight, final int gapOpenClose, final BlockingQueue<Integer> queueOfFloors, final AtomicBoolean isIterable) {
-        if( !(countOfFloors <= 0 || speed <= 0 || floorHeight <= 0 || gapOpenClose <= 0) ) {
-            this.maxFloor = countOfFloors;
-            this.speed = speed;
-            this.floorHeight = floorHeight;
-            this.gapOpenClose = gapOpenClose;
-            this.queueOfFloors = queueOfFloors;
-            this.isIterable = isIterable;
-            findTimeForOneFloor();
-        }
-        else {
-            System.out.println("Uncorrected input data!");//TODO tests
-        }
+    public ElevatorOverTheGround(Porch porch, final double speed, final int gapOpenClose, final BlockingQueue<Integer> queueOfFloors, final AtomicBoolean isIterable) {
+        super(speed, gapOpenClose);
+        this.porch = porch;
+        this.queueOfFloors = queueOfFloors;
+        this.isIterable = isIterable;
+        findTimeForOneFloor();
     }
 
-    /** @return минимальный этаж */
-    public int getMinFloor(){
-        return minFloor;
+    /** @return промежуток между открытием и закрытием дверей */
+    public int getGapOpenClose() {return super.getGapOpenClose(); }
+
+    /** @return текущий этаж */
+    public int getCurrentFloor(){return  currentFloor; }
+
+    /** @return - следующий этаж */
+    protected int getNextFloor() {
+        try {
+            return queueOfFloors.take();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return 0;
     }
 
-    /** @return  максимальный этаж*/
-    public int getMaxFloor(){
-        return maxFloor;
+    /** @return количество этажей */
+    public int getCountOfFloors(final int nextFloor) {
+        return Math.abs(nextFloor - currentFloor);
+    }
+
+
+    /** @retun время необходимое для проезда одного этажа */
+    public long getTimeForOneFloor() {
+        return timeForOneFloor;
     }
 
     /** Главная функция этого класса */
@@ -78,29 +81,18 @@ public class ElevatorOverTheGround extends Thread implements Elevator {
     protected void openCloseDoors(final int floor) {
         try {
             System.out.println("Open doors on " + floor + " floor!");
-            Thread.sleep(gapOpenClose * MS);
+            Thread.sleep(getGapOpenClose() * MS);
             System.out.println("Close doors on " + floor + " floor");
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
 
-    /** @return - следующий этаж */
-    protected int getNextFloor() {
-        try {
-            return queueOfFloors.take();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        return 0;
-    }
-
     /** @return направление движения лифта
      *      <code>true</code> если движение вверх
      *      <code>false</code> если движение вниз
      *      */
-
-    private boolean isUp(final int nextFloor) {
+    protected boolean isUp(final int nextFloor) {
         boolean up;
         if (nextFloor > currentFloor) {
             up = true;
@@ -115,19 +107,9 @@ public class ElevatorOverTheGround extends Thread implements Elevator {
         System.out.println("Current floor: " + currentFloor);
     }
 
-    /** @return количество этажей */
-    public int getCountOfFloors(final int nextFloor) {
-        return Math.abs(nextFloor - currentFloor);
-    }
-
     /** Расчитывает время необходимое для проезда одного этажа */
     public void findTimeForOneFloor() {
-        timeForOneFloor = Math.round(floorHeight / speed) * MS;
-    }
-
-    /** @retun время необходимое для проезда одного этажа */
-    public long getTimeForOneFloor() {
-        return timeForOneFloor;
+        timeForOneFloor = Math.round(porch.getFloorHeight() / getSpeed()) * MS;
     }
 
     /** Эмитация движения кабины лифта */
@@ -151,4 +133,5 @@ public class ElevatorOverTheGround extends Thread implements Elevator {
             --currentFloor;
         }
     }
+
 }

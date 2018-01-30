@@ -1,5 +1,7 @@
 package uteevbkru;
 
+import uteevbkru.porch.Porch;
+
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -16,6 +18,8 @@ public class Main {
         double floorHeight = 2.0;
         int gapOpenClose = 2;
 
+        Porch porch = new Porch(countOfFloors, floorHeight);
+
         /**
          Не может очередь быть больше количества этажей в подьезде!
          */
@@ -23,9 +27,10 @@ public class Main {
         BlockingQueue<Integer> queueOfFloors = new ArrayBlockingQueue<Integer>(capacityOfQueue);
         AtomicBoolean isIterable = new AtomicBoolean(false);
 
-        ElevatorOverTheGround elevator = new ElevatorOverTheGround(countOfFloors, speed, floorHeight, gapOpenClose, queueOfFloors, isIterable);
+        ElevatorOverTheGround elevatorOver = new ElevatorOverTheGround(porch, speed, gapOpenClose, queueOfFloors, isIterable);
+        Thread elevator = new Thread(elevatorOver);
         elevator.start();
-        Controller controller = new Controller(elevator , queueOfFloors, isIterable);
+        Controller controller = new Controller(elevatorOver, porch, queueOfFloors, isIterable);
         controller.start();
     }
 }
