@@ -14,7 +14,7 @@ public class Porch {
     /** Высота этажа */
     private double floorHeight;
 
-    /** Конструктор создания подьезда */
+    /** Конструктор */
     public Porch(final int countOfFloors, final double floorHeight ){
         if ( (countOfFloors > 0) && (floorHeight > 0) ){
             this.maxFloor = countOfFloors;

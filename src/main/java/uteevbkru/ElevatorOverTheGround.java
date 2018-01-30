@@ -11,6 +11,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * @author Uteev Anton
  * @version 1.0.1
  */
+
 public class ElevatorOverTheGround extends Elevator implements Runnable {
     /** Текущий этаж*/
     private int currentFloor = 0;

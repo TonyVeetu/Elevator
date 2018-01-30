@@ -19,13 +19,13 @@ public class Elevator {
             this.gapOpenClose = gapOpenClose;
         }
         else {
-            System.out.println("Parameters is not correct!");
+            System.out.println("Parameters for Elevator is not correct!");
         }
     }
 
     /** @retunr время между открытием и закрытием дверей */
-    protected int getGapOpenClose(){ return gapOpenClose; }
+    public int getGapOpenClose(){ return gapOpenClose; }
 
     /** @retunr скорость лифта */
-    protected double getSpeed(){ return speed; }
+    public double getSpeed(){ return speed; }
 }
