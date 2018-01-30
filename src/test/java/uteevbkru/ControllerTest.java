@@ -4,6 +4,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Scanner;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -13,6 +14,7 @@ public class ControllerTest {
     private Controller controller;
     private AtomicBoolean isIterable;
     private BlockingQueue<Integer> queueOfFloors;
+    private Scanner scanner;
 
     @Before
     public void setUp(){
@@ -25,8 +27,8 @@ public class ControllerTest {
         queueOfFloors = new ArrayBlockingQueue<>(capacityOfQueue);
         elevator = new ElevatorOverTheGround(countOfFloors, speed, floorHeight, gapOpenClose, queueOfFloors, isIterable);
         isIterable = new AtomicBoolean();
-        controller = new Controller(elevator, queueOfFloors, isIterable);
-        controller.start();
+        controller = new Controller(elevator, queueOfFloors, isIterable, true);
+        scanner = new Scanner(System.in);
     }
 
     @Test
@@ -55,5 +57,23 @@ public class ControllerTest {
         Assert.assertEquals(true, controller.getIsIterable());
     }
 
+    @Test
+    public void injectFloorTest(){
+        Assert.assertEquals(true, controller.injectFloor(5));
+    }
+
+    @Test
+    public void injectFloorErrorTest(){
+        Assert.assertEquals(false, controller.injectFloor(55));
+    }
+
+    @Test
+    public void runTest(){
+        controller.initReadFromFile();
+        controller.start();
+        while (!controller.getIsIterable()){
+
+        }
+    }
 
 }
