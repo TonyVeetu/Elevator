@@ -5,6 +5,7 @@ import org.junit.Test;
 import uteevbkru.elevator.Elevator;
 import uteevbkru.porch.Porch;
 
+import java.io.IOException;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -24,8 +25,12 @@ public class ElevatorOverTheGroundTest {
         int capacityOfQueue = countOfFloors;//Не может очередь быть больше количества этажей в подьезде!
 
         queueOfFloors = new ArrayBlockingQueue<>(capacityOfQueue);
-        porch = new Porch(countOfFloors, floorHeight);
-        elevator = new ElevatorOverTheGround(porch, speed, gapOpenClose, queueOfFloors, isIterable);
+        try {
+            porch = new Porch(countOfFloors, floorHeight);
+            elevator = new ElevatorOverTheGround(porch, speed, gapOpenClose, queueOfFloors, isIterable);
+        } catch (IOException e ){
+            return;
+        }
     }
 
     @org.junit.After
@@ -87,8 +92,14 @@ public class ElevatorOverTheGroundTest {
         double floorHeight = 2.0;
         int gapOpenClose = -2;
 
-        Porch porch = new Porch(countOfFloors, floorHeight);
-        ElevatorOverTheGround elevator = new ElevatorOverTheGround(porch , speed, gapOpenClose, queueOfFloors, isIterable);
+        Porch porch;
+        ElevatorOverTheGround elevator;
+        try {
+            porch = new Porch(countOfFloors, floorHeight);
+            elevator = new ElevatorOverTheGround(porch, speed, gapOpenClose, queueOfFloors, isIterable);
+        } catch (IOException e ){
+            return;
+        }
         Assert.assertEquals(0, elevator.getGapOpenClose());
     }
 }

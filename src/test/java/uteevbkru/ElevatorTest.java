@@ -4,11 +4,18 @@ import org.junit.Assert;
 import org.junit.Test;
 import uteevbkru.elevator.Elevator;
 
+import java.io.IOException;
+
 public class ElevatorTest {
 
     @Test
     public void badConstructorTest(){
-        Elevator elevator = new Elevator(0, -2);
+        Elevator elevator;
+        try {
+            elevator = new Elevator(0, -2);
+        } catch (IOException e){
+            return;
+        }
         Assert.assertEquals(0, elevator.getGapOpenClose());
     }
 }

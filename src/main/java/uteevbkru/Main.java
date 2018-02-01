@@ -2,12 +2,21 @@ package uteevbkru;
 
 import uteevbkru.porch.Porch;
 
+import java.io.IOException;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+/** Main класс. */
 public class Main {
-    public static void main(final String[] args) throws InterruptedException {
+
+    /** Главная функция проекта.
+     * @param args  1 = количество этажей
+     *              2 = скорость движения лифта в м/с
+     *              3 = высота этажа
+     *              4 = время между открфтием и закрфтием дверей лифта
+     */
+    public static void main(final String[] args) {
         //        int countOfFloors = Integer.decode(args[0]);
         //        int speed = Integer.decode(args[1]);
         //        int floorHeight = Integer.decode(args[2]);
@@ -18,8 +27,6 @@ public class Main {
         double floorHeight = 2.0;
         int gapOpenClose = 2;
 
-        Porch porch = new Porch(countOfFloors, floorHeight);
-
         /**
          Не может очередь быть больше количества этажей в подьезде!
          */
@@ -27,7 +34,15 @@ public class Main {
         BlockingQueue<Integer> queueOfFloors = new ArrayBlockingQueue<Integer>(capacityOfQueue);
         AtomicBoolean isIterable = new AtomicBoolean(false);
 
-        ElevatorOverTheGround elevatorOver = new ElevatorOverTheGround(porch, speed, gapOpenClose, queueOfFloors, isIterable);
+        Porch porch;
+        ElevatorOverTheGround elevatorOver;
+        try {
+            porch = new Porch(countOfFloors, floorHeight);
+            elevatorOver = new ElevatorOverTheGround(porch, speed, gapOpenClose, queueOfFloors, isIterable);
+        } catch (IOException e) {
+            return;
+        }
+
         Thread elevator = new Thread(elevatorOver);
         elevator.start();
         Controller controller = new Controller(elevatorOver, porch, queueOfFloors, isIterable);

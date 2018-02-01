@@ -10,8 +10,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Класс обрабатывает введенное число пользователем.
+ *
  * @author Uteev Anton
+ *
  * @version 1.0.1
+ *
  */
 public class Controller extends Thread {
     /** Показывает прерваны ли потоки */
@@ -55,7 +58,7 @@ public class Controller extends Thread {
                 String str = scanner.nextLine();
                 if(isFile)
                     System.out.println(str);
-                if (!check(str, currentFloor)) {
+                if (!checkForStop(str, currentFloor)) {
                     break;
                 }
                 currentFloor = getFloor(str);
@@ -112,11 +115,15 @@ public class Controller extends Thread {
         return false;
     }
 
-    /** Останавливает потоки при вводе строки "Stop" */
-    protected boolean check(final String str, final int floor) {
-        if (str.equals("Stop") || str.equals("stop") || str.equals("стоп") || str.equals("Стоп")) {
+    /** Останавливает потоки при вводе строки "Stop".
+     * @param iStr входная строка
+     * @param iFloor этаж
+     * @return <code>true</code> если не нужно остановить потоки
+     */
+    protected boolean checkForStop(final String iStr, final int iFloor) {
+        if (iStr.equals("Stop") || iStr.equals("checkForStop") || iStr.equals("стоп") || iStr.equals("Стоп")) {
             isIterable.set(true);
-            injectFloor(floor); // Добавляем в очередь предыдущее значение,
+            injectFloor(iFloor); // Добавляем в очередь предыдущее значение,
             // что бы вытащий поток ElevatorOverTheGround из цикла while при введенном Stop!
             return false;
         }

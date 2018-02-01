@@ -1,41 +1,50 @@
 package uteevbkru.porch;
 
+import java.io.IOException;
+
 /**
- * Класс Подъезд
+ * Класс Подъезд.
  * @author Uteev Anton
  * @version 1.0.1
+ *
  */
 
 public class Porch {
-    /** Минимальный этаж*/
-    private final static int minFloor = 0;
-    /** Максимальный этаж */
+    /** @param Минимальный этаж*/
+    private final static int ZERO_FLOOR = 0;
+    /** @param Максимальный этаж */
     private int maxFloor;
-    /** Высота этажа */
+    /** @param Высота этажа */
     private double floorHeight;
 
-    /** Конструктор */
-    public Porch(final int countOfFloors, final double floorHeight ){
-        if ( (countOfFloors > 0) && (floorHeight > 0) ){
-            this.maxFloor = countOfFloors;
-            this.floorHeight = floorHeight;
-        }
-        else {
+    /**
+     * @param iCountOfFloors количество этажей.
+     * @param iFloorHeight высота этажа
+     * @throws IOException если параметры не корректны
+     */
+    public Porch(final int iCountOfFloors, final double iFloorHeight) throws IOException {
+        if ((iCountOfFloors > 0) && (iFloorHeight > 0)) {
+            this.maxFloor = iCountOfFloors;
+            this.floorHeight = iFloorHeight;
+        } else {
             System.out.println("Bad parameters for Porch!");
+            throw new IOException();
         }
     }
 
     /** @return минимальный этаж */
-    public int getMinFloor(){
-        return minFloor;
+    public final int getMinFloor() {
+        return ZERO_FLOOR;
     }
 
     /** @return  максимальный этаж*/
-    public int getMaxFloor(){
+    public final int getMaxFloor() {
         return maxFloor;
     }
 
     /** @return высоту этажа*/
-    public double getFloorHeight(){return floorHeight;}
+    public final double getFloorHeight() {
+        return floorHeight;
+    }
 
 }

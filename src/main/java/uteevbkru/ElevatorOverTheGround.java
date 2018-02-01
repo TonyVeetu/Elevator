@@ -3,13 +3,17 @@ package uteevbkru;
 import uteevbkru.elevator.Elevator;
 import uteevbkru.porch.Porch;
 
+import java.io.IOException;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Класс Лифт без подземных этажей.
+ *
  * @author Uteev Anton
+ *
  * @version 1.0.1
+ *
  */
 
 public class ElevatorOverTheGround extends Elevator implements Runnable {
@@ -27,7 +31,7 @@ public class ElevatorOverTheGround extends Elevator implements Runnable {
     private Porch porch;
     
     /** Конструктор */
-    public ElevatorOverTheGround(Porch porch, final double speed, final int gapOpenClose, final BlockingQueue<Integer> queueOfFloors, final AtomicBoolean isIterable) {
+    public ElevatorOverTheGround(Porch porch, final double speed, final int gapOpenClose, final BlockingQueue<Integer> queueOfFloors, final AtomicBoolean isIterable) throws IOException{
         super(speed, gapOpenClose);
         this.porch = porch;
         this.queueOfFloors = queueOfFloors;
@@ -36,10 +40,14 @@ public class ElevatorOverTheGround extends Elevator implements Runnable {
     }
 
     /** @return промежуток между открытием и закрытием дверей */
-    public int getGapOpenClose() {return super.getGapOpenClose(); }
+    public final int getGapOpenClose() {
+        return super.getGapOpenClose();
+    }
 
     /** @return текущий этаж */
-    public int getCurrentFloor(){return  currentFloor; }
+    public int getCurrentFloor() {
+        return  currentFloor;
+    }
 
     /** @return - следующий этаж */
     protected int getNextFloor() {

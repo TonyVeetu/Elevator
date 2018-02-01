@@ -5,6 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 import uteevbkru.porch.Porch;
 
+import java.io.IOException;
 import java.util.Scanner;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -27,8 +28,12 @@ public class ControllerTest {
 
         int capacityOfQueue = countOfFloors;//Не может очередь быть больше количества этажей в подьезде!
         queueOfFloors = new ArrayBlockingQueue<>(capacityOfQueue);
-        porch = new Porch(countOfFloors, floorHeight);
-        elevator = new ElevatorOverTheGround(porch ,speed, gapOpenClose, queueOfFloors, isIterable);
+        try {
+            porch = new Porch(countOfFloors, floorHeight);
+            elevator = new ElevatorOverTheGround(porch, speed, gapOpenClose, queueOfFloors, isIterable);
+        } catch (IOException e){
+            return;
+        }
         isIterable = new AtomicBoolean();
         controller = new Controller(elevator, porch, queueOfFloors, isIterable, true);
         scanner = new Scanner(System.in);
@@ -50,13 +55,13 @@ public class ControllerTest {
 
     @Test
     public void checkTest(){
-        Assert.assertEquals(false, controller.check("Stop", 5));
+        Assert.assertEquals(false, controller.checkForStop("Stop", 5));
     }
 
     @Test
     public void isIterableTest(){
         Assert.assertEquals(false, controller.getIsIterable());
-        controller.check("Stop", 5);
+        controller.checkForStop("Stop", 5);
         Assert.assertEquals(true, controller.getIsIterable());
     }
 
@@ -77,6 +82,28 @@ public class ControllerTest {
         while (!controller.getIsIterable()){
 
         }
+    }
+
+    @Test
+    public void badConstructor(){
+        int countOfFloors = -10;
+        double speed = 2.0;
+        double floorHeight = 2.0;
+        int gapOpenClose = 2;
+
+        int capacityOfQueue = countOfFloors;//Не может очередь быть больше количества этажей в подьезде!
+        BlockingQueue<Integer> queueOfFloors = new ArrayBlockingQueue<>(capacityOfQueue);
+        Porch porch;
+        ElevatorOverTheGround elevator;
+        try {
+            porch = new Porch(countOfFloors, floorHeight);
+            elevator = new ElevatorOverTheGround(porch, speed, gapOpenClose, queueOfFloors, isIterable);
+        } catch (IOException e){
+            return;
+        }
+
+        AtomicBoolean isIterable = new AtomicBoolean();
+        Controller controller = new Controller(elevator, porch, queueOfFloors, isIterable);
     }
 
 }
