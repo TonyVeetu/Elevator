@@ -17,22 +17,22 @@ import java.util.concurrent.atomic.AtomicBoolean;
  *
  */
 public class Controller extends Thread {
-    /** Показывает прерваны ли потоки */
+    /** Показывает прерваны ли потоки. */
     private AtomicBoolean isIterable;
-    /** Для считывания данных с консоли */
+    /** Для считывания данных с консоли. */
     private Scanner scanner;
-    /** Очередь этажей */
+    /** Очередь этажей. */
     private BlockingQueue<Integer> queue;
-    /** Лифт */
+    /** Лифт. */
     private ElevatorOverTheGround elevatorOver;
-    /** Файл для чтения Scanner'ом в тестах*/
-    File file = new File("./test.txt");
-    /** Переменная характеризующая чтение из файла */
+    /** Файл для чтения Scanner'ом в тестах. */
+    private File file = new File("./test.txt");
+    /** Переменная характеризующая чтение из файла. */
     private boolean isFile;
-    /** Подъезд */
+    /** Подъезд. */
     private Porch porch;
 
-    /** Конструктор для считывания из System.in */
+    /** Конструктор для считывания из System.in. */
     public Controller(final ElevatorOverTheGround elevatorOver, Porch porch, final BlockingQueue<Integer> queue, final AtomicBoolean isIterable) {
         this.porch = porch;
         this.elevatorOver = elevatorOver;
@@ -41,7 +41,7 @@ public class Controller extends Thread {
         scanner = new Scanner(System.in);
     }
 
-    /** Конструктор для считывания из файла */
+    /** Конструктор для считывания из файла. */
     public Controller(final ElevatorOverTheGround elevatorOver, Porch porch, final BlockingQueue<Integer> queue, final AtomicBoolean isIterable, final boolean isFile) {
         this.porch = porch;
         this.elevatorOver = elevatorOver;
@@ -50,14 +50,15 @@ public class Controller extends Thread {
         this.isFile = isFile;
     }
 
-    /** Главная функция этого класса */
+    /** Главная функция этого класса. */
     public void run() {
         Integer currentFloor = 0;
         while (!isIterable.get()) {
             if (scanner.hasNext()) {
                 String str = scanner.nextLine();
-                if(isFile)
+                if (isFile) {
                     System.out.println(str);
+                }
                 if (!checkForStop(str, currentFloor)) {
                     break;
                 }
@@ -68,21 +69,21 @@ public class Controller extends Thread {
         scanner.close();
     }
 
-    /** Инициализирует Scanner для чтения из файла */
-    protected void initReadFromFile(){
+    /** Инициализирует Scanner для чтения из файла. */
+    protected void initReadFromFile() {
         try {
             scanner = new Scanner(file);
-        } catch (FileNotFoundException e){
+        } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
     }
 
-    /** Возвращает состояние переменной isIterable */
-    protected boolean getIsIterable(){
+    /** Возвращает состояние переменной isIterable. */
+    protected boolean getIsIterable() {
         return isIterable.get();
     }
 
-    /** Превращает строковое значение этажа в число */
+    /** Превращает строковое значение этажа в число. */
     protected Integer getFloor(final String str) {
         try {
             return Integer.decode(str);
@@ -90,7 +91,7 @@ public class Controller extends Thread {
         return 0;
     }
 
-    /** Вставляет этаж в очередь
+    /** Вставляет этаж в очередь.
      * @return <code>true</code> значение вставилось
      *         <code>false</code> значение не вставилось
      */
@@ -101,11 +102,11 @@ public class Controller extends Thread {
                 queue.put(floor);
             } catch (InterruptedException e) {
                 e.printStackTrace();
-            } catch (NullPointerException e){
+            } catch (NullPointerException e) {
                 e.printStackTrace();
-            } catch (IllegalArgumentException e){
+            } catch (IllegalArgumentException e) {
                 e.printStackTrace();
-            } catch (ClassCastException e){
+            } catch (ClassCastException e) {
                 e.printStackTrace();
             }
             return true;
