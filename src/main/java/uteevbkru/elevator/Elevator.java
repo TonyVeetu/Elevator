@@ -10,7 +10,7 @@ import java.io.IOException;
  * @version 1.0.1
  */
 
-public abstract class Elevator {
+public class Elevator {
     /** @param скорость движения лифта */
     private final double speed;
     /** @param Время на открытие и закрытие дверей */
