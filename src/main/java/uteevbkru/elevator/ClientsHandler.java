@@ -1,20 +1,21 @@
 package uteevbkru.elevator;
 
 import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.EOFException;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.concurrent.BlockingQueue;
 
-public class MonoClientHandler implements Runnable {
+public class ClientsHandler implements Runnable {
 
     private static Socket clientDialog;
-
     private int fromWho;
     private int requiredFloor;
     private final String regex = ", ";
-    public MonoClientHandler(Socket client) {
-        MonoClientHandler.clientDialog = client;
+    private BlockingQueue<Integer> queueOfFloors;
+    public ClientsHandler(Socket client, BlockingQueue<Integer> queue) {
+        ClientsHandler.clientDialog = client;
+        queueOfFloors = queue;
     }
 
     @Override
@@ -23,21 +24,13 @@ public class MonoClientHandler implements Runnable {
             DataInputStream in = new DataInputStream(clientDialog.getInputStream());
             while (!clientDialog.isClosed()) {
                 String entry = in.readUTF();
-
-                unpackMsg(entry);
-                System.out.println("READ from client " + fromWho + ": requiredFloor - " + requiredFloor);
-                //TODO
-                //вставить сообщение в очередь лифта!!
-
-
-                // TODO Сейчас quit не пошлеться!!
-//                if (entry.equalsIgnoreCase("quit")) {
-//                    System.out.println("Client initialize connections suicide ...");
-//                    break;
-//                } else {
-//
-//                }
-
+                if (entry.equalsIgnoreCase("stop")) {
+                    break;
+                } else {
+                    unpackMsg(entry);
+                    System.out.println("READ from client " + fromWho + ": requiredFloor - " + requiredFloor);
+                    injectFloors();
+                }
             }
             in.close();
             clientDialog.close();
@@ -60,4 +53,14 @@ public class MonoClientHandler implements Runnable {
             System.out.println("Error!");
         }
     }
+
+    //TODO написать красиво!! Учитывая конечную точку лифта!
+    private void injectFloors(){
+        queueOfFloors.add(fromWho);
+        queueOfFloors.add(requiredFloor);
+    }
+
+    //!!!!!!!!!!
+    //TODO мне не нравиться что каждый этаж добавляет следующий этаж в очередь лифта!
+    //!!!!!!!!!!
 }

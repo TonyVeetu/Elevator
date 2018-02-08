@@ -4,6 +4,7 @@ import java.io.*;
 import java.net.Socket;
 import java.util.Scanner;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Floor implements Runnable{
     /** Показывает прерваны ли потоки. */
@@ -14,16 +15,20 @@ public class Floor implements Runnable{
     private final String regex = ", ";
     //TODO передавать эти переменные!
     private static int MIN_FLOOR = 0;
-    private static int MAX_FLOOR = 1;
+    private static int MAX_FLOOR = 5;
 
-    private static int count = 0;
+    private static AtomicInteger COUNTER = new AtomicInteger();
     private int currentFloor;
     private static Socket socket;
 
-    public Floor() {
-        if (count < MAX_FLOOR) {
-            count++;
-            currentFloor = count;
+    public Floor(int floor) {
+        if (floor > MIN_FLOOR && floor <= MAX_FLOOR) {
+            currentFloor = floor;
+//        if (COUNTER.get() < MAX_FLOOR) {
+//            System.out.println(COUNTER  +  " after");
+//            currentFloor = COUNTER.getAndAdd(1);
+//            System.out.println(COUNTER.get()  +  " before");
+//            System.out.println(currentFloor);
             if (setUpConnection()) {
                 scanner = new Scanner(System.in);
             }
@@ -31,6 +36,7 @@ public class Floor implements Runnable{
         else {
             System.out.println("The threshold has been exceeded by the number of clients!");
         }
+        System.out.println(currentFloor + " floor was been created!");
     }
 
     public void run() {
@@ -40,10 +46,13 @@ public class Floor implements Runnable{
                     if (scanner.hasNext()) {
                         String str = scanner.nextLine();
                         if (!checkForStop(str)) {
+                            oos.writeUTF("stop");
+                            oos.flush();
                             break;
                         }
                         if (checkFloor(str)) {
                             oos.writeUTF(packMsg(str));
+                            //TODO разобраться!
                             oos.flush();// проталкиваем сообщение из буфера сетевых сообщений в канал
                         }
                     }
