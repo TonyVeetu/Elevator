@@ -9,8 +9,6 @@ import java.util.concurrent.Executors;
 
 public class MainSocketServer {
     public static void main(String[] args) throws IOException, InterruptedException{
-
-
         ElevatorMultiServer elevatorMultiServer = new ElevatorMultiServer();
         elevatorMultiServer.startServer();
 

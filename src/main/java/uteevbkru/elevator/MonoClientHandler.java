@@ -2,6 +2,7 @@ package uteevbkru.elevator;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.EOFException;
 import java.io.IOException;
 import java.net.Socket;
 
@@ -9,6 +10,9 @@ public class MonoClientHandler implements Runnable {
 
     private static Socket clientDialog;
 
+    private int fromWho;
+    private int requiredFloor;
+    private final String regex = ", ";
     public MonoClientHandler(Socket client) {
         MonoClientHandler.clientDialog = client;
     }
@@ -16,33 +20,44 @@ public class MonoClientHandler implements Runnable {
     @Override
     public void run() {
         try {
-            //DataOutputStream out = new DataOutputStream(clientDialog.getOutputStream());
             DataInputStream in = new DataInputStream(clientDialog.getInputStream());
             while (!clientDialog.isClosed()) {
-                //TODO побороть EOFException!!
-
-
                 String entry = in.readUTF();
-                System.out.println("READ from client - " + entry);
 
-                if (entry.equalsIgnoreCase("quit")) {
-                    System.out.println("Client initialize connections suicide ...");
-                    //out.writeUTF("Server reply - " + entry + " - OK");
-                    Thread.sleep(3000);
-                    break;
-                }
-                //out.writeUTF("Server reply - " + entry + " - OK");
-                //System.out.println("Server Wrote message to clientDialog.");
-                //out.flush();
+                unpackMsg(entry);
+                System.out.println("READ from client " + fromWho + ": requiredFloor - " + requiredFloor);
+                //TODO
+                //вставить сообщение в очередь лифта!!
+
+
+                // TODO Сейчас quit не пошлеться!!
+//                if (entry.equalsIgnoreCase("quit")) {
+//                    System.out.println("Client initialize connections suicide ...");
+//                    break;
+//                } else {
+//
+//                }
+
             }
             in.close();
-            //out.close();
             clientDialog.close();
             System.out.println("Closing connections & channels - DONE.");
+        } catch (EOFException e ){
+            System.out.println("EOFException!");
         } catch (IOException e) {
             e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        }
+    }
+
+    public void unpackMsg(String str){
+        try {
+            String prom[] = str.split(regex);
+            String fromW = prom[0];
+            String requiredF = prom[1];
+            fromWho = Integer.decode(fromW);
+            requiredFloor = Integer.decode(requiredF);
+        } catch (NumberFormatException e) {
+            System.out.println("Error!");
         }
     }
 }

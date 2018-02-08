@@ -2,56 +2,96 @@ package uteevbkru.floor;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.Scanner;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Floor implements Runnable{
+    /** Показывает прерваны ли потоки. */
+    private static AtomicBoolean isIterable = new AtomicBoolean(false);
+    /** Для считывания данных с консоли. */
+    private Scanner scanner;
+
+    private final String regex = ", ";
+    //TODO передавать эти переменные!
+    private static int MIN_FLOOR = 0;
+    private static int MAX_FLOOR = 1;
+
     private static int count = 0;
     private int currentFloor;
-    static Socket socket;
+    private static Socket socket;
 
-    public Floor(){
-        count++;
-        currentFloor = count;
-        System.out.println("new Floor = "+currentFloor);
-        try {
-            socket = new Socket("localhost", 4444);
-            System.out.println("Client connected to socket");
-        } catch (Exception e) {
-            System.out.println("отказано в подключении!!");
-            e.printStackTrace();
+    public Floor() {
+        if (count < MAX_FLOOR) {
+            count++;
+            currentFloor = count;
+            if (setUpConnection()) {
+                scanner = new Scanner(System.in);
+            }
+        }
+        else {
+            System.out.println("The threshold has been exceeded by the number of clients!");
         }
     }
 
     public void run() {
-        try ( DataOutputStream oos = new DataOutputStream(socket.getOutputStream());
-              DataInputStream ois = new DataInputStream(socket.getInputStream())) {
-            System.out.println("Client oos & ois initialized");
-            int i = 0;
-            while (i < 5) {
-                oos.writeUTF(i + ", floor:" + currentFloor);
-                // проталкиваем сообщение из буфера сетевых сообщений в канал
-                oos.flush();
-
-                // ждём чтобы сервер успел прочесть сообщение из сокета и
-                // ответить
-                Thread.sleep(100);
-                System.out.println("Client wrote & start waiting for data from server...");
-
-                // забираем ответ из канала сервера в сокете
-                // клиента и сохраняем её в ois переменную, печатаем на
-                // консоль
-                //System.out.println("reading...");
-                //String in = ois.readUTF();
-                //System.out.println(in);
-                i++;
-                Thread.sleep(1000);
+        try ( DataOutputStream oos = new DataOutputStream(socket.getOutputStream())) {
+            while (!(isIterable.get())) {
+                if (scanner != null) {
+                    if (scanner.hasNext()) {
+                        String str = scanner.nextLine();
+                        if (!checkForStop(str)) {
+                            break;
+                        }
+                        if (checkFloor(str)) {
+                            oos.writeUTF(packMsg(str));
+                            oos.flush();// проталкиваем сообщение из буфера сетевых сообщений в канал
+                        }
+                    }
+                }
             }
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
+    }
+
+    private String packMsg(String floor){
+        return currentFloor + regex + floor;
+    }
+
+    protected boolean checkForStop(final String iStr) {
+        if (iStr.equals("Stop") || iStr.equals("stop")
+                || iStr.equals("стоп") || iStr.equals("Стоп")) {
+            isIterable.set(true);
+            return false;
+        }
+        return true;
+    }
+
+    /** Превращает строковое значение этажа в число. */
+    protected boolean checkFloor(final String str) {
+        try {
+            int floor = Integer.decode(str);
+            if (floor >= MIN_FLOOR && floor <= MAX_FLOOR) {
+                return true;
+            } else {
+                System.out.println("Uncorrected floor");
+                return false;
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("Uncorrected floor");
+        }
+        return false;
+    }
+
+    private boolean setUpConnection(){
+        try {
+            socket = new Socket("localhost", 4444);
+            return true;
+        } catch (Exception e) {
+            System.out.println("Connection refused!");
+            e.printStackTrace();
+        }
+        return false;
     }
 }
 

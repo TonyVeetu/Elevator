@@ -122,7 +122,7 @@ public class Controller extends Thread {
      * @return <code>true</code> если не нужно остановить потоки
      */
     protected boolean checkForStop(final String iStr, final int iFloor) {
-        if (iStr.equals("Stop") || iStr.equals("checkForStop") || iStr.equals("стоп") || iStr.equals("Стоп")) {
+        if (iStr.equals("Stop") || iStr.equals("stop") || iStr.equals("стоп") || iStr.equals("Стоп")) {
             isIterable.set(true);
             injectFloor(iFloor); // Добавляем в очередь предыдущее значение,
             // что бы вытащий поток ElevatorOverTheGround из цикла while при введенном Stop!
