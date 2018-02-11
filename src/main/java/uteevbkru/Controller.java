@@ -62,8 +62,10 @@ public class Controller extends Thread {
                 if (!checkForStop(str, currentFloor)) {
                     break;
                 }
-                currentFloor = getFloor(str);
-                injectFloor(currentFloor);
+                currentFloor = decodeFloor(str);
+                if (checkLimits(currentFloor)) {
+                    injectFloor(currentFloor);
+                }
             }
         }
         scanner.close();
@@ -82,40 +84,7 @@ public class Controller extends Thread {
     protected boolean getIsIterable() {
         return isIterable.get();
     }
-
-    /** Превращает строковое значение этажа в число. */
-    protected Integer getFloor(final String str) {
-        try {
-            return Integer.decode(str);
-        } catch (NumberFormatException e) { }
-        return 0;
-    }
-
-    /** Вставляет этаж в очередь.
-     * @return <code>true</code> значение вставилось
-     *         <code>false</code> значение не вставилось
-     */
-
-    protected boolean injectFloor(final Integer floor) {
-        if ((floor >= porch.getMinFloor()) && (floor <= porch.getMaxFloor())) {
-            try {
-                queue.put(floor);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } catch (NullPointerException e) {
-                e.printStackTrace();
-            } catch (IllegalArgumentException e) {
-                e.printStackTrace();
-            } catch (ClassCastException e) {
-                e.printStackTrace();
-            }
-            return true;
-        } else {
-            System.out.println("Inputted floor is bigger than maxFloor!");
-        }
-        return false;
-    }
-
+    
     /** Останавливает потоки при вводе строки "Stop".
      * @param iStr входная строка
      * @param iFloor этаж
@@ -129,5 +98,46 @@ public class Controller extends Thread {
             return false;
         }
         return true;
+    }
+
+    /** Превращает строковое значение этажа в число. */
+    protected Integer decodeFloor(final String str) {
+        try {
+            return Integer.decode(str);
+        } catch (NumberFormatException e) { }
+        return 0;
+    }
+
+    /** Проверяет Лимиты.
+     * @return <code>true</code> если лимиты не привышены
+     *         <code>false</code> в противном случаи
+     */
+    protected boolean checkLimits(final Integer floor){
+        if ((floor >= porch.getMinFloor()) && (floor <= porch.getMaxFloor())) {
+            return true;
+        } else {
+            System.out.println("Inputted floor is bigger than maxFloor!");
+            return false;
+        }
+    }
+
+    /** Вставляет этаж в очередь.
+     * @return <code>true</code> значение вставилось
+     *         <code>false</code> значение не вставилось
+     */
+
+    protected void injectFloor(final Integer floor) {
+        //TODO вставлять учитывая направление движения!!!
+        try {
+            queue.put(floor);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        } catch (ClassCastException e) {
+            e.printStackTrace();
+        }
     }
 }

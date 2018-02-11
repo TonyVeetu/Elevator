@@ -3,14 +3,10 @@ package uteevbkru;
 import uteevbkru.elevator.Elevator;
 import uteevbkru.porch.Porch;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.net.ServerSocket;
-import java.net.Socket;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Класс Лифт без подземных этажей.
@@ -23,7 +19,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ElevatorOverTheGround extends Elevator implements Runnable {
     /** Текущий этаж. */
-    private int currentFloor = 0;
+    private AtomicInteger currentFloor = new AtomicInteger(0);
     /** Очередь этажей. */
     private BlockingQueue<Integer> queueOfFloors;
     /** Показывает прерваны ли потоки.*/
@@ -34,6 +30,8 @@ public class ElevatorOverTheGround extends Elevator implements Runnable {
     private long timeForOneFloor;
     /** Подъезд. */
     private Porch porch;
+
+    private boolean upTrip = false;
     
     /** Конструктор. */
     public ElevatorOverTheGround(Porch porch, final double speed, final int gapOpenClose, final BlockingQueue<Integer> queueOfFloors, final AtomicBoolean isIterable) throws IOException {
@@ -44,6 +42,11 @@ public class ElevatorOverTheGround extends Elevator implements Runnable {
         findTimeForOneFloor();
     }
 
+    /** Расчитывает время необходимое для проезда одного этажа. */
+    public void findTimeForOneFloor() {
+        timeForOneFloor = Math.round(porch.getFloorHeight() / getSpeed()) * MS;
+    }
+
     /** @return промежуток между открытием и закрытием дверей. */
     public final int getGapOpenClose() {
         return super.getGapOpenClose();
@@ -51,11 +54,30 @@ public class ElevatorOverTheGround extends Elevator implements Runnable {
 
     /** @return текущий этаж. */
     public int getCurrentFloor() {
-        return  currentFloor;
+        return  currentFloor.get();
+    }
+
+    public boolean getUpTrip(){ return upTrip; }
+
+    /** Главная функция этого класса. */
+    public void run() {
+        while (!isIterable.get()) {
+            int nextFloor = getNextFloor();
+            setUpTrip(nextFloor);
+            int floors = getCountOfFloors(nextFloor);
+            if (floors != 0) {
+                moving(floors);
+                openCloseDoors(nextFloor);
+            }
+        }
     }
 
     /** @return - следующий этаж. */
     protected int getNextFloor() {
+//---------
+        System.out.print("getNextFloor: "+"\t"); Object[] array = queueOfFloors.toArray();
+        for(int i = 0; i < array.length; i++) { System.out.print(array[i]+"\t");}
+//-----------
         try {
             return queueOfFloors.take();
         } catch (InterruptedException e) {
@@ -64,28 +86,39 @@ public class ElevatorOverTheGround extends Elevator implements Runnable {
         return 0;
     }
 
-    /** @return количество этажей. */
-    public int getCountOfFloors(final int nextFloor) {
-        return Math.abs(nextFloor - currentFloor);
+    /** @return направление движения лифта.
+     *      <code>true</code> если движение вверх
+     *      <code>false</code> если движение вниз
+     *      */
+    protected void setUpTrip(final int nextFloor) {
+        if (nextFloor > currentFloor.get()) {
+            upTrip = true;
+        } else {
+            upTrip = false;
+        }
     }
 
+    /** @return количество этажей. */
+    public int getCountOfFloors(final int nextFloor) {
+        return Math.abs(nextFloor - currentFloor.get());
+    }
+
+    /** Эмитация движения кабины лифта. */
+    private void moving(final int countOfFloors) {
+        for (int i = 0; i < countOfFloors; i++) {
+            try {
+                Thread.sleep(timeForOneFloor);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            printCurrentFloor();
+            changeCurrentFloor();
+        }
+    }
 
     /** @retun время необходимое для проезда одного этажа. */
     public long getTimeForOneFloor() {
         return timeForOneFloor;
-    }
-
-    /** Главная функция этого класса. */
-    public void run() {
-        while (!isIterable.get()) {
-            int nextFloor = getNextFloor();
-            boolean up = isUp(nextFloor);
-            int floors = getCountOfFloors(nextFloor);
-            if (floors != 0) {
-                moving(floors, up);
-                openCloseDoors(nextFloor);
-            }
-        }
     }
 
     /**
@@ -102,49 +135,17 @@ public class ElevatorOverTheGround extends Elevator implements Runnable {
         }
     }
 
-    /** @return направление движения лифта.
-     *      <code>true</code> если движение вверх
-     *      <code>false</code> если движение вниз
-     *      */
-    protected boolean isUp(final int nextFloor) {
-        boolean up;
-        if (nextFloor > currentFloor) {
-            up = true;
-        } else {
-            up = false;
-        }
-        return up;
-    }
-
     /** Печатает текущий этаж. */
     private void printCurrentFloor() {
         System.out.println("Current floor: " + currentFloor);
     }
 
-    /** Расчитывает время необходимое для проезда одного этажа. */
-    public void findTimeForOneFloor() {
-        timeForOneFloor = Math.round(porch.getFloorHeight() / getSpeed()) * MS;
-    }
-
-    /** Эмитация движения кабины лифта. */
-    private void moving(final int countOfFloors, final boolean up) {
-        for (int i = 0; i < countOfFloors; i++) {
-            try {
-                Thread.sleep(timeForOneFloor);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            printCurrentFloor();
-            changeCurrentFloor(up);
-        }
-    }
-
     /** Меняет текущий этаж. */
-    private void changeCurrentFloor(final boolean up) {
-        if (up) {
-            ++currentFloor;
+    private void changeCurrentFloor() {
+        if (upTrip) {
+            currentFloor.incrementAndGet();
         } else {
-            --currentFloor;
+            currentFloor.decrementAndGet();
         }
     }
 

@@ -42,14 +42,14 @@ public class ControllerTest {
     @Test
     public void getFloorTest() {
         String strFloor = "3";
-        int floor = controller.getFloor(strFloor);
+        int floor = controller.decodeFloor(strFloor);
         Assert.assertEquals(3, floor);
     }
 
     @Test
     public void getFloorErrorTest(){
         String strFloor = "a";
-        int floor = controller.getFloor(strFloor);
+        int floor = controller.decodeFloor(strFloor);
         Assert.assertEquals(0, floor);
     }
 

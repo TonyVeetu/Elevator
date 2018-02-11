@@ -2,7 +2,6 @@ package uteevbkru;
 
 import org.junit.Assert;
 import org.junit.Test;
-import uteevbkru.elevator.Elevator;
 import uteevbkru.porch.Porch;
 
 import java.io.IOException;
@@ -81,8 +80,8 @@ public class ElevatorOverTheGroundTest {
     @Test
     public void isUpTest(){
         int floor = elevator.getCurrentFloor();
-        Assert.assertEquals(true, elevator.isUp(floor + 1));
-        Assert.assertEquals(false, elevator.isUp(floor - 1));
+        Assert.assertEquals(true, elevator.setUpTrip(floor + 1));
+        Assert.assertEquals(false, elevator.setUpTrip(floor - 1));
     }
 
     @Test

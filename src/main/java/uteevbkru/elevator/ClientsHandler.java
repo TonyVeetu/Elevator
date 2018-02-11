@@ -1,5 +1,7 @@
 package uteevbkru.elevator;
 
+import uteevbkru.ElevatorOverTheGround;
+
 import java.io.DataInputStream;
 import java.io.EOFException;
 import java.io.IOException;
@@ -13,10 +15,12 @@ public class ClientsHandler implements Runnable {
     private boolean direction;
     private final String regex = ", ";
     private BlockingQueue<Integer> queueOfFloors;
+    private ElevatorOverTheGround elevator;
 
-    public ClientsHandler(Socket client, BlockingQueue<Integer> queue) {
+    public ClientsHandler(Socket client, BlockingQueue<Integer> queue, ElevatorOverTheGround elevatorOverTheGround) {
         ClientsHandler.clientDialog = client;
         queueOfFloors = queue;
+        elevator = elevatorOverTheGround;
     }
 
     @Override
@@ -64,6 +68,21 @@ public class ClientsHandler implements Runnable {
     //          inject_floor();
 
     private void injectFloors(){
+        boolean direction = elevator.getUpTrip();
+        int currentFloor = elevator.getCurrentFloor();
+        if (direction) {
+            if (currentFloor < fromWho) {
+                queueOfFloors.add(fromWho);
+            } else {
+                //TODO записать в вспомогательную очередь, которую лифт просмотрить когда поменяет направление движения
+            }
+        } else {
+            if (currentFloor > fromWho) {
+                queueOfFloors.add(fromWho);
+            } else {
+                //TODO записать в вспомогательную очередь, которую лифт просмотрить когда поменяет направление движения
+            }
+        }
         queueOfFloors.add(fromWho);
         //queueOfFloors.add(direction);
     }

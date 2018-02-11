@@ -1,5 +1,7 @@
 package uteevbkru.elevator;
 
+import uteevbkru.ElevatorOverTheGround;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -14,9 +16,11 @@ public class ServerForElevator {
 
     private static ExecutorService executeIt;
     private BlockingQueue<Integer> queueOfFloors;
-    public ServerForElevator(int count, final BlockingQueue<Integer> queue){
+    private ElevatorOverTheGround elevator;
+    public ServerForElevator(int count, final BlockingQueue<Integer> queue, final ElevatorOverTheGround elevatorOver){
         queueOfFloors = queue;
         executeIt = Executors.newFixedThreadPool(count);
+        elevator = elevatorOver;
     }
 
     public void startServer() {
@@ -37,7 +41,7 @@ public class ServerForElevator {
                     //}
                 //}
                 Socket client = server.accept();
-                executeIt.execute(new ClientsHandler(client, queueOfFloors));
+                executeIt.execute(new ClientsHandler(client, queueOfFloors, elevator));
                 System.out.println("Connection accepted.");
             }
             executeIt.shutdown();
