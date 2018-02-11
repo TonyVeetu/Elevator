@@ -10,9 +10,10 @@ public class ClientsHandler implements Runnable {
 
     private static Socket clientDialog;
     private int fromWho;
-    private int requiredFloor;
+    private boolean direction;
     private final String regex = ", ";
     private BlockingQueue<Integer> queueOfFloors;
+
     public ClientsHandler(Socket client, BlockingQueue<Integer> queue) {
         ClientsHandler.clientDialog = client;
         queueOfFloors = queue;
@@ -28,7 +29,7 @@ public class ClientsHandler implements Runnable {
                     break;
                 } else {
                     unpackMsg(entry);
-                    System.out.println("READ from client " + fromWho + ": requiredFloor - " + requiredFloor);
+                    System.out.println("READ from client " + fromWho + ": direction - " + direction);
                     injectFloors();
                 }
             }
@@ -46,18 +47,25 @@ public class ClientsHandler implements Runnable {
         try {
             String prom[] = str.split(regex);
             String fromW = prom[0];
-            String requiredF = prom[1];
+            String directionF = prom[1];
             fromWho = Integer.decode(fromW);
-            requiredFloor = Integer.decode(requiredF);
+            direction = Boolean.parseBoolean(directionF);
         } catch (NumberFormatException e) {
-            System.out.println("Error!");
+            System.out.println("Error in unpackMsg()!");
         }
     }
 
-    //TODO написать красиво!! Учитывая конечную точку лифта!
+    //TODO вставлять этаж в очередь лифта нужно если текущее вставляемое значение по пути!
+    // if(direction)//движение вверх
+    //      if(current_floor < fromW)
+    //            inject_floor();
+    //else//движение вниз
+    //      if(current_floor > fromW)
+    //          inject_floor();
+
     private void injectFloors(){
         queueOfFloors.add(fromWho);
-        queueOfFloors.add(requiredFloor);
+        //queueOfFloors.add(direction);
     }
 
     //!!!!!!!!!!

@@ -19,25 +19,23 @@ public class ServerForElevator {
         executeIt = Executors.newFixedThreadPool(count);
     }
 
-    //TODO использование сканера это нормально??
     public void startServer() {
-        try (ServerSocket server = new ServerSocket(4444);
+        try (ServerSocket server = new ServerSocket(4444)) {
              /*BufferedReader br = new BufferedReader(new InputStreamReader(System.in));*/
-             Scanner scanner = new Scanner(System.in))
-        {
+             /*Scanner scanner = new Scanner(System.in))*/
             while (!server.isClosed()) {
                 //TODO разобраться с BufferedReader!! как с его помощью считать данные!
                 //if (br.ready()) {
-                if (scanner.hasNext()){
+                //if (scanner.hasNext()){
                     //String serverCommand = br.readLine();
-                    String serverCommand = scanner.nextLine();
-                    System.out.println("ServerCommand " + serverCommand);
-                    if (serverCommand.equalsIgnoreCase("stop")) {
-                        System.out.println("Main Server initiate exiting...");
-                        server.close();
-                        break;
-                    }
-                }
+                    //String serverCommand = scanner.nextLine();
+                    //System.out.println("ServerCommand " + serverCommand);
+                    //if (serverCommand.equalsIgnoreCase("stop")) {
+                    //    System.out.println("Main Server initiate exiting...");
+                    //    server.close();
+                    //    break;
+                    //}
+                //}
                 Socket client = server.accept();
                 executeIt.execute(new ClientsHandler(client, queueOfFloors));
                 System.out.println("Connection accepted.");

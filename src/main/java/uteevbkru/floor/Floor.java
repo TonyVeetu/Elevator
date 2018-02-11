@@ -4,7 +4,6 @@ import java.io.*;
 import java.net.Socket;
 import java.util.Scanner;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class Floor implements Runnable{
     /** Показывает прерваны ли потоки. */
@@ -13,22 +12,22 @@ public class Floor implements Runnable{
     private Scanner scanner;
 
     private final String regex = ", ";
+
     //TODO передавать эти переменные!
+    //Нужны для проверки правильного создания клиента-этажа!
+
     private static int MIN_FLOOR = 0;
     private static int MAX_FLOOR = 5;
-
-    private static AtomicInteger COUNTER = new AtomicInteger();
-    private int currentFloor;
+    private int clientFloor = -1;
     private static Socket socket;
 
-    public Floor(int floor) {
-        if (floor > MIN_FLOOR && floor <= MAX_FLOOR) {
-            currentFloor = floor;
-//        if (COUNTER.get() < MAX_FLOOR) {
-//            System.out.println(COUNTER  +  " after");
-//            currentFloor = COUNTER.getAndAdd(1);
-//            System.out.println(COUNTER.get()  +  " before");
-//            System.out.println(currentFloor);
+    /**
+     * Конструктор для создания клиента-этажа!
+     * @param clientFloor - этаж который будет эмитировать клиент!
+     */
+    public Floor(int clientFloor) {
+        if (clientFloor > MIN_FLOOR && clientFloor <= MAX_FLOOR) {
+            this.clientFloor = clientFloor;
             if (setUpConnection()) {
                 scanner = new Scanner(System.in);
             }
@@ -36,7 +35,7 @@ public class Floor implements Runnable{
         else {
             System.out.println("The threshold has been exceeded by the number of clients!");
         }
-        System.out.println(currentFloor + " floor was been created!");
+        System.out.println(this.clientFloor + " clientFloor was been created!");
     }
 
     public void run() {
@@ -49,11 +48,14 @@ public class Floor implements Runnable{
                             oos.writeUTF("stop");
                             oos.flush();
                             break;
-                        }
-                        if (checkFloor(str)) {
-                            oos.writeUTF(packMsg(str));
-                            //TODO разобраться!
-                            oos.flush();// проталкиваем сообщение из буфера сетевых сообщений в канал
+                        } else {
+                            int floor = checkInput(str);
+                            if (floor != -1) {
+                                boolean direction = findDirection(floor);
+                                System.out.println(packMsg(direction));
+                                oos.writeUTF(packMsg(direction));
+                                oos.flush(); //TODO разобраться!
+                            }
                         }
                     }
                 }
@@ -63,8 +65,8 @@ public class Floor implements Runnable{
         }
     }
 
-    private String packMsg(String floor){
-        return currentFloor + regex + floor;
+    private String packMsg(boolean direction){
+        return clientFloor + regex + direction;
     }
 
     protected boolean checkForStop(final String iStr) {
@@ -76,21 +78,33 @@ public class Floor implements Runnable{
         return true;
     }
 
-    /** Превращает строковое значение этажа в число. */
-    protected boolean checkFloor(final String str) {
+    /**
+     * Определяет какое число было введено.
+     * @param str - введенное число String
+     * @return число int
+     */
+    protected int checkInput(final String str) {
+        int number = -1;
         try {
-            int floor = Integer.decode(str);
-            if (floor >= MIN_FLOOR && floor <= MAX_FLOOR) {
-                return true;
-            } else {
-                System.out.println("Uncorrected floor");
-                return false;
-            }
+            number = Integer.decode(str);
         } catch (NumberFormatException e) {
-            System.out.println("Uncorrected floor");
+            System.out.println("It isn't a number!");
         }
-        return false;
+        return number;
     }
+
+    /**
+     * Определяет вверх или вниз поедет пользователь.
+     * В консоль вводиться 0 или 1
+     */
+    protected boolean findDirection(int floor){
+        return floor >= 1 ? true : false;
+    }
+
+    /**
+     * Устанавливает соединение с серверным сокетом.
+     * @return true - установлено, false - не установлено
+     */
 
     private boolean setUpConnection(){
         try {

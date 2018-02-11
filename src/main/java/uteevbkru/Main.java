@@ -30,9 +30,6 @@ public class Main {
         double floorHeight = 2.0;
         int gapOpenClose = 2;
 
-        /**
-         Не может очередь быть больше количества этажей в подьезде!
-         */
         int capacityOfQueue = countOfFloors*10;
         //TODO think about capacity!
 
@@ -47,8 +44,8 @@ public class Main {
         }
         Thread elevator = new Thread(elevatorOver);
         elevator.start();
-        //Controller controller = new Controller(elevatorOver, porch, queueOfFloors, isIterable);
-        //controller.start();
+        Controller controller = new Controller(elevatorOver, porch, queueOfFloors, isIterable);
+        controller.start();
         ServerForElevator server = new ServerForElevator(countOfFloors, queueOfFloors);
         server.startServer();
     }
