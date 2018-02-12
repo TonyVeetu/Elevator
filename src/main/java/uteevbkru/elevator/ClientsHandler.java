@@ -27,7 +27,7 @@ public class ClientsHandler implements Runnable {
             DataInputStream in = new DataInputStream(clientDialog.getInputStream());
             while (!clientDialog.isClosed()) {
                 String entry = in.readUTF();
-                if (entry.equalsIgnoreCase("stop")) {
+                if (entry.equalsIgnoreCase("stop")) { // TODO убрать stop!
                     break;
                 } else {
                     unpackMsg(entry);

@@ -142,6 +142,8 @@ public class ElevatorOverTheGround extends Elevator implements Runnable {
     /** Главная функция этого класса. */
     public void run() {
         while (!isIterable.get()) {
+            //TODO sort queueFloors!!
+            //TODO sort queueFloors!!
             targetFloor.set(getNextFloor());
             setUpTrip(targetFloor.get());
             int floors = getCountOfFloors(targetFloor.get());
