@@ -2,24 +2,18 @@ package uteevbkru.elevator;
 
 import uteevbkru.ElevatorOverTheGround;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Scanner;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class ServerForElevator {
 
-    private static ExecutorService executeIt;
-    private BlockingQueue<Integer> queueOfFloors;
+    private static ExecutorService executeService;
     private ElevatorOverTheGround elevator;
-    public ServerForElevator(int count, final BlockingQueue<Integer> queue, final ElevatorOverTheGround elevatorOver){
-        queueOfFloors = queue;
-        executeIt = Executors.newFixedThreadPool(count);
+    public ServerForElevator(int count, final ElevatorOverTheGround elevatorOver){
+        executeService = Executors.newFixedThreadPool(count);
         elevator = elevatorOver;
     }
 
@@ -41,10 +35,10 @@ public class ServerForElevator {
                     //}
                 //}
                 Socket client = server.accept();
-                executeIt.execute(new ClientsHandler(client, queueOfFloors, elevator));
+                executeService.execute(new ClientsHandler(client, elevator));
                 System.out.println("Connection accepted.");
             }
-            executeIt.shutdown();
+            executeService.shutdown();
             System.out.println("Server has been shutdown!");
         } catch (IOException e) {
             e.printStackTrace();

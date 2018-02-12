@@ -11,8 +11,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ElevatorOverTheGroundTest {
     private ElevatorOverTheGround elevator;
-    private AtomicBoolean isIterable = new AtomicBoolean(false);
-    private BlockingQueue<Integer> queueOfFloors;
     private Porch porch;
 
     @org.junit.Before
@@ -21,12 +19,10 @@ public class ElevatorOverTheGroundTest {
         double speed = 2.0;
         double floorHeight = 2.0;
         int gapOpenClose = 2;
-        int capacityOfQueue = countOfFloors;//Не может очередь быть больше количества этажей в подьезде!
 
-        queueOfFloors = new ArrayBlockingQueue<>(capacityOfQueue);
         try {
             porch = new Porch(countOfFloors, floorHeight);
-            elevator = new ElevatorOverTheGround(porch, speed, gapOpenClose, queueOfFloors, isIterable);
+            elevator = new ElevatorOverTheGround(porch, speed, gapOpenClose);
         } catch (IOException e ){
             return;
         }
@@ -48,7 +44,7 @@ public class ElevatorOverTheGroundTest {
 
     @Test
     public void getNextFloorTest(){
-        queueOfFloors.add(5);
+        elevator.putInQueueForController(5);
         Assert.assertEquals(5,elevator.getNextFloor());
     }
 
@@ -78,13 +74,6 @@ public class ElevatorOverTheGroundTest {
     }
 
     @Test
-    public void isUpTest(){
-        int floor = elevator.getCurrentFloor();
-        Assert.assertEquals(true, elevator.setUpTrip(floor + 1));
-        Assert.assertEquals(false, elevator.setUpTrip(floor - 1));
-    }
-
-    @Test
     public void badConstrictorTest(){
         int countOfFloors = 2;
         double speed = -2.0;
@@ -95,7 +84,7 @@ public class ElevatorOverTheGroundTest {
         ElevatorOverTheGround elevator;
         try {
             porch = new Porch(countOfFloors, floorHeight);
-            elevator = new ElevatorOverTheGround(porch, speed, gapOpenClose, queueOfFloors, isIterable);
+            elevator = new ElevatorOverTheGround(porch, speed, gapOpenClose);
         } catch (IOException e ){
             return;
         }

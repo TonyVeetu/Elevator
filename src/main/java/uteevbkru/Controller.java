@@ -5,7 +5,6 @@ import uteevbkru.porch.Porch;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -21,8 +20,6 @@ public class Controller extends Thread {
     private AtomicBoolean isIterable;
     /** Для считывания данных с консоли. */
     private Scanner scanner;
-    /** Очередь этажей. */
-    private BlockingQueue<Integer> queue;
     /** Лифт. */
     private ElevatorOverTheGround elevatorOver;
     /** Файл для чтения Scanner'ом в тестах. */
@@ -33,20 +30,18 @@ public class Controller extends Thread {
     private Porch porch;
 
     /** Конструктор для считывания из System.in. */
-    public Controller(final ElevatorOverTheGround elevatorOver, Porch porch, final BlockingQueue<Integer> queue, final AtomicBoolean isIterable) {
+    public Controller(final ElevatorOverTheGround elevatorOver, Porch porch) {
         this.porch = porch;
         this.elevatorOver = elevatorOver;
-        this.queue = queue;
-        this.isIterable = isIterable;
+        this.isIterable = elevatorOver.getIsIterable();
         scanner = new Scanner(System.in);
     }
 
     /** Конструктор для считывания из файла. */
-    public Controller(final ElevatorOverTheGround elevatorOver, Porch porch, final BlockingQueue<Integer> queue, final AtomicBoolean isIterable, final boolean isFile) {
+    public Controller(final ElevatorOverTheGround elevatorOver, Porch porch, final boolean isFile) {
         this.porch = porch;
         this.elevatorOver = elevatorOver;
-        this.queue = queue;
-        this.isIterable = isIterable;
+        this.isIterable = elevatorOver.getIsIterable();
         this.isFile = isFile;
     }
 
@@ -121,23 +116,14 @@ public class Controller extends Thread {
         }
     }
 
-    /** Вставляет этаж в очередь.
+    /** Вставляет этаж "введенный пользовтелем в лифте" в очередь.
      * @return <code>true</code> значение вставилось
      *         <code>false</code> значение не вставилось
+     *
+     *  Не учитывается направление движения лифта!
      */
 
-    protected void injectFloor(final Integer floor) {
-        //TODO вставлять учитывая направление движения!!!
-        try {
-            queue.put(floor);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (NullPointerException e) {
-            e.printStackTrace();
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
-        } catch (ClassCastException e) {
-            e.printStackTrace();
-        }
+    protected boolean injectFloor(final Integer floor) {
+         return elevatorOver.putInQueueForController(floor);
     }
 }

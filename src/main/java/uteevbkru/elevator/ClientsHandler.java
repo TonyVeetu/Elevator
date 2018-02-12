@@ -14,12 +14,10 @@ public class ClientsHandler implements Runnable {
     private int fromWho;
     private boolean direction;
     private final String regex = ", ";
-    private BlockingQueue<Integer> queueOfFloors;
     private ElevatorOverTheGround elevator;
 
-    public ClientsHandler(Socket client, BlockingQueue<Integer> queue, ElevatorOverTheGround elevatorOverTheGround) {
+    public ClientsHandler(Socket client, ElevatorOverTheGround elevatorOverTheGround) {
         ClientsHandler.clientDialog = client;
-        queueOfFloors = queue;
         elevator = elevatorOverTheGround;
     }
 
@@ -47,7 +45,7 @@ public class ClientsHandler implements Runnable {
         }
     }
 
-    public void unpackMsg(String str){
+    private void unpackMsg(String str){
         try {
             String prom[] = str.split(regex);
             String fromW = prom[0];
@@ -59,35 +57,7 @@ public class ClientsHandler implements Runnable {
         }
     }
 
-    //TODO вставлять этаж в очередь лифта нужно если текущее вставляемое значение по пути!
-    // if(direction)//движение вверх
-    //      if(current_floor < fromW)
-    //            inject_floor();
-    //else//движение вниз
-    //      if(current_floor > fromW)
-    //          inject_floor();
-
     private void injectFloors(){
-        boolean direction = elevator.getUpTrip();
-        int currentFloor = elevator.getCurrentFloor();
-        if (direction) {
-            if (currentFloor < fromWho) {
-                queueOfFloors.add(fromWho);
-            } else {
-                //TODO записать в вспомогательную очередь, которую лифт просмотрить когда поменяет направление движения
-            }
-        } else {
-            if (currentFloor > fromWho) {
-                queueOfFloors.add(fromWho);
-            } else {
-                //TODO записать в вспомогательную очередь, которую лифт просмотрить когда поменяет направление движения
-            }
-        }
-        queueOfFloors.add(fromWho);
-        //queueOfFloors.add(direction);
+        elevator.putInQueueForClient(fromWho, direction);
     }
-
-    //!!!!!!!!!!
-    //TODO мне не нравиться что каждый этаж добавляет следующий этаж в очередь лифта!
-    //!!!!!!!!!!
 }

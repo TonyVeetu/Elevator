@@ -30,28 +30,17 @@ public class Main {
         double floorHeight = 2.0;
         int gapOpenClose = 2;
 
-        int capacityOfQueue = countOfFloors*10;
-        //TODO think about capacity!
-
-        //TODO создавать очередь в лифте!!!
-        BlockingQueue<Integer> queueOfFloors = new ArrayBlockingQueue<Integer>(capacityOfQueue);
-        //TODO создавать isIterable тоже в лифте!!!
-        AtomicBoolean isIterable = new AtomicBoolean(false);
-
         try {
-            //TODO передавать porch тоже через лифт!!
             porch = new Porch(countOfFloors, floorHeight);
-            elevatorOver = new ElevatorOverTheGround(porch, speed, gapOpenClose, queueOfFloors, isIterable);
+            elevatorOver = new ElevatorOverTheGround(porch, speed, gapOpenClose);
         } catch (IOException e) {
             return;
         }
         Thread elevator = new Thread(elevatorOver);
         elevator.start();
-        //TODO Исправить!!! зачем я даю очередь и лифт если лифт содержит очередь!
-        Controller controller = new Controller(elevatorOver, porch, queueOfFloors, isIterable);
+        Controller controller = new Controller(elevatorOver, porch);
         controller.start();
-        //TODO Исправить!!! зачем я даю очередь и лифт если лифт содержит очередь!
-        ServerForElevator server = new ServerForElevator(countOfFloors, queueOfFloors, elevatorOver);
+        ServerForElevator server = new ServerForElevator(countOfFloors, elevatorOver);
         server.startServer();
     }
 }

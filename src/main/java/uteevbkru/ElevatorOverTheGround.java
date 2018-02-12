@@ -4,6 +4,7 @@ import uteevbkru.elevator.Elevator;
 import uteevbkru.porch.Porch;
 
 import java.io.IOException;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -20,8 +21,16 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class ElevatorOverTheGround extends Elevator implements Runnable {
     /** Текущий этаж. */
     private AtomicInteger currentFloor = new AtomicInteger(0);
+
+    private AtomicInteger targetFloor = new AtomicInteger(0);
     /** Очередь этажей. */
     private BlockingQueue<Integer> queueOfFloors;
+
+    private BlockingQueue<Integer> queueUp;
+
+    private BlockingQueue<Integer> queueDown;
+
+
     /** Показывает прерваны ли потоки.*/
     private AtomicBoolean isIterable;
     /** Количество миллисекуд в секунде. */
@@ -31,15 +40,84 @@ public class ElevatorOverTheGround extends Elevator implements Runnable {
     /** Подъезд. */
     private Porch porch;
 
-    private boolean upTrip = false;
+    private static int Q = 10;//TODO think about capacity!
+
+    private boolean upTrip = true;
     
     /** Конструктор. */
-    public ElevatorOverTheGround(Porch porch, final double speed, final int gapOpenClose, final BlockingQueue<Integer> queueOfFloors, final AtomicBoolean isIterable) throws IOException {
+    public ElevatorOverTheGround(Porch porch, final double speed, final int gapOpenClose) throws IOException {
         super(speed, gapOpenClose);
         this.porch = porch;
-        this.queueOfFloors = queueOfFloors;
-        this.isIterable = isIterable;
+        queueOfFloors = new ArrayBlockingQueue<>(porch.getMaxFloor()*Q, true);
+        queueUp = new ArrayBlockingQueue<>(porch.getMaxFloor()*Q, true);
+        queueDown = new ArrayBlockingQueue<>(porch.getMaxFloor()*Q, true);
+        isIterable = new AtomicBoolean(false);
         findTimeForOneFloor();
+    }
+
+
+    public boolean putInQueueForController(Integer floor) {
+        try {
+            if (floor >= porch.getMinFloor() && floor <= porch.getMaxFloor() ) {
+                queueOfFloors.put(floor);
+                return true;
+            } else {
+                return false;
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        } catch (ClassCastException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    //TODO why not put??
+    //TODO take it easy!!!
+    /** Позволяет клиентам вставить этаж в очередь.
+     *
+     * Нужно использовать следующий этаж при вставке в очередь этажей!
+     *  */
+
+    public void  putInQueueForClient(final Integer fromWho, final boolean direction) {
+        boolean delta = (targetFloor.get() < fromWho) ? true : false;
+        if (upTrip) {
+            if (direction) {
+                if (delta) {
+                    queueOfFloors.add(fromWho);
+                } else {
+                    queueUp.add(fromWho);
+                }
+            } else {
+                if(delta) {
+                    queueDown.add(fromWho);
+                } else {
+                    queueDown.add(fromWho);
+                }
+            }
+        } else {
+            if (direction) {
+                if (delta) {
+                    queueUp.add(fromWho);
+                } else {
+                    queueUp.add(fromWho);
+                }
+            } else {
+                if (delta){
+                    queueDown.add(fromWho);
+                } else {
+                    queueOfFloors.add(fromWho);
+                }
+            }
+        }
+    }
+
+    public AtomicBoolean getIsIterable() {
+        return isIterable;
     }
 
     /** Расчитывает время необходимое для проезда одного этажа. */
@@ -62,12 +140,14 @@ public class ElevatorOverTheGround extends Elevator implements Runnable {
     /** Главная функция этого класса. */
     public void run() {
         while (!isIterable.get()) {
-            int nextFloor = getNextFloor();
-            setUpTrip(nextFloor);
-            int floors = getCountOfFloors(nextFloor);
+            targetFloor.set(getNextFloor());
+            setUpTrip(targetFloor.get());
+            int floors = getCountOfFloors(targetFloor.get());
             if (floors != 0) {
                 moving(floors);
-                openCloseDoors(nextFloor);
+                openCloseDoors(targetFloor.get());
+            } else {
+                System.out.println("The Elevator on this floor yet!!");
             }
         }
     }
@@ -90,12 +170,9 @@ public class ElevatorOverTheGround extends Elevator implements Runnable {
      *      <code>true</code> если движение вверх
      *      <code>false</code> если движение вниз
      *      */
-    protected void setUpTrip(final int nextFloor) {
-        if (nextFloor > currentFloor.get()) {
-            upTrip = true;
-        } else {
-            upTrip = false;
-        }
+    private boolean setUpTrip(final int nextFloor) {
+        upTrip = (nextFloor > currentFloor.get()) ? true : false;
+        return upTrip;
     }
 
     /** @return количество этажей. */

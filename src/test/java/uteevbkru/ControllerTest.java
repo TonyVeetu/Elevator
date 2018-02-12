@@ -30,12 +30,12 @@ public class ControllerTest {
         queueOfFloors = new ArrayBlockingQueue<>(capacityOfQueue);
         try {
             porch = new Porch(countOfFloors, floorHeight);
-            elevator = new ElevatorOverTheGround(porch, speed, gapOpenClose, queueOfFloors, isIterable);
+            elevator = new ElevatorOverTheGround(porch, speed, gapOpenClose);
         } catch (IOException e){
             return;
         }
         isIterable = new AtomicBoolean();
-        controller = new Controller(elevator, porch, queueOfFloors, isIterable, true);
+        controller = new Controller(elevator, porch, true);
         scanner = new Scanner(System.in);
     }
 
@@ -91,19 +91,15 @@ public class ControllerTest {
         double floorHeight = 2.0;
         int gapOpenClose = 2;
 
-        int capacityOfQueue = countOfFloors;//Не может очередь быть больше количества этажей в подьезде!
-        BlockingQueue<Integer> queueOfFloors = new ArrayBlockingQueue<>(capacityOfQueue);
         Porch porch;
         ElevatorOverTheGround elevator;
         try {
             porch = new Porch(countOfFloors, floorHeight);
-            elevator = new ElevatorOverTheGround(porch, speed, gapOpenClose, queueOfFloors, isIterable);
+            elevator = new ElevatorOverTheGround(porch, speed, gapOpenClose);
         } catch (IOException e){
             return;
         }
-
-        AtomicBoolean isIterable = new AtomicBoolean();
-        Controller controller = new Controller(elevator, porch, queueOfFloors, isIterable);
+        Controller controller = new Controller(elevator, porch);
     }
 
 }
