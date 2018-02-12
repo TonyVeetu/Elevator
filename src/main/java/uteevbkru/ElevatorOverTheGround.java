@@ -6,6 +6,7 @@ import uteevbkru.porch.Porch;
 import java.io.IOException;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -48,7 +49,7 @@ public class ElevatorOverTheGround extends Elevator implements Runnable {
     public ElevatorOverTheGround(Porch porch, final double speed, final int gapOpenClose) throws IOException {
         super(speed, gapOpenClose);
         this.porch = porch;
-        queueOfFloors = new ArrayBlockingQueue<>(porch.getMaxFloor()*Q, true);
+        queueOfFloors = new PriorityBlockingQueue<>(porch.getMaxFloor()*Q);
         queueUp = new ArrayBlockingQueue<>(porch.getMaxFloor()*Q, true);
         queueDown = new ArrayBlockingQueue<>(porch.getMaxFloor()*Q, true);
         isIterable = new AtomicBoolean(false);
@@ -84,6 +85,7 @@ public class ElevatorOverTheGround extends Elevator implements Runnable {
      *  */
 
     public void  putInQueueForClient(final Integer fromWho, final boolean direction) {
+        //fromWho не может прийти неправильным!
         boolean delta = (targetFloor.get() < fromWho) ? true : false;
         if (upTrip) {
             if (direction) {
@@ -155,8 +157,8 @@ public class ElevatorOverTheGround extends Elevator implements Runnable {
     /** @return - следующий этаж. */
     protected int getNextFloor() {
 //---------
-        System.out.print("getNextFloor: "+"\t"); Object[] array = queueOfFloors.toArray();
-        for(int i = 0; i < array.length; i++) { System.out.print(array[i]+"\t");}
+        //System.out.print("getNextFloor: "+"\t"); Object[] array = queueOfFloors.toArray();
+        //for(int i = 0; i < array.length; i++) { System.out.print(array[i]+"\t");}
 //-----------
         try {
             return queueOfFloors.take();
