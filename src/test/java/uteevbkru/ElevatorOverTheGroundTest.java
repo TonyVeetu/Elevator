@@ -5,9 +5,6 @@ import org.junit.Test;
 import uteevbkru.porch.Porch;
 
 import java.io.IOException;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ElevatorOverTheGroundTest {
     private ElevatorOverTheGround elevator;
@@ -45,7 +42,7 @@ public class ElevatorOverTheGroundTest {
     @Test
     public void getNextFloorTest(){
         elevator.putInQueueForController(5);
-        Assert.assertEquals(5,elevator.getNextFloor());
+        Assert.assertEquals(5,elevator.getNextFloor(true));
     }
 
     @Test

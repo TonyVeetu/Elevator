@@ -11,7 +11,7 @@ import java.io.IOException;
 
 public class Porch {
     /** @param Минимальный этаж*/
-    private final static int ZERO_FLOOR = 0;
+    private final static int ZERO_FLOOR = 1;
     /** @param Максимальный этаж */
     private int maxFloor;
     /** @param Высота этажа */

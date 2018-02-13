@@ -4,8 +4,13 @@ import uteevbkru.elevator.Elevator;
 import uteevbkru.porch.Porch;
 
 import java.io.IOException;
+import java.util.AbstractQueue;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -22,16 +27,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class ElevatorOverTheGround extends Elevator implements Runnable {
     /** Текущий этаж. */
     private AtomicInteger currentFloor = new AtomicInteger(0);
-
-    private AtomicInteger targetFloor = new AtomicInteger(0);
+    /** Требуемый этаж. */
+    private AtomicInteger requiredFloor = new AtomicInteger(0);
     /** Очередь этажей. */
-    private BlockingQueue<Integer> queueOfFloors;
-
-    private BlockingQueue<Integer> queueUp;
-
-    private BlockingQueue<Integer> queueDown;
-
-
+    private LinkedBlockingDeque<Integer> queueOfFloors;
     /** Показывает прерваны ли потоки.*/
     private AtomicBoolean isIterable;
     /** Количество миллисекуд в секунде. */
@@ -43,15 +42,17 @@ public class ElevatorOverTheGround extends Elevator implements Runnable {
 
     private static int Q = 10;//TODO think about capacity!
 
-    private boolean upTrip = true;
+    private AtomicBoolean upTrip = new AtomicBoolean(true);
     
     /** Конструктор. */
     public ElevatorOverTheGround(Porch porch, final double speed, final int gapOpenClose) throws IOException {
         super(speed, gapOpenClose);
         this.porch = porch;
-        queueOfFloors = new PriorityBlockingQueue<>(porch.getMaxFloor()*Q);
-        queueUp = new ArrayBlockingQueue<>(porch.getMaxFloor()*Q, true);
-        queueDown = new ArrayBlockingQueue<>(porch.getMaxFloor()*Q, true);
+
+//        queueOfFloors = new PriorityBlockingQueue<>(porch.getMaxFloor()*Q,
+//        (Integer x, Integer y) -> (x < y) ? -1 : ((x == y) ? 0 : 1));
+
+        queueOfFloors = new LinkedBlockingDeque<>(porch.getMaxFloor()*Q);
         isIterable = new AtomicBoolean(false);
         findTimeForOneFloor();
     }
@@ -65,57 +66,21 @@ public class ElevatorOverTheGround extends Elevator implements Runnable {
             } else {
                 return false;
             }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (NullPointerException e) {
-            e.printStackTrace();
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
-        } catch (ClassCastException e) {
+        } catch (InterruptedException | NullPointerException | ClassCastException | IllegalArgumentException e) {
             e.printStackTrace();
         }
         return false;
     }
 
-    //TODO why not put??
-    //TODO take it easy!!!
     /** Позволяет клиентам вставить этаж в очередь.
      *
-     * Нужно использовать следующий этаж при вставке в очередь этажей!
-     *  */
+     * Нужно ли анализировать requiredFloor при вставке в очередь этажей?
+     */
 
     public void  putInQueueForClient(final Integer fromWho, final boolean direction) {
-        //fromWho не может прийти неправильным!
-        boolean delta = (targetFloor.get() < fromWho) ? true : false;
-        if (upTrip) {
-            if (direction) {
-                if (delta) {
-                    queueOfFloors.add(fromWho);
-                } else {
-                    queueUp.add(fromWho);
-                }
-            } else {
-                if(delta) {
-                    queueDown.add(fromWho);
-                } else {
-                    queueDown.add(fromWho);
-                }
-            }
-        } else {
-            if (direction) {
-                if (delta) {
-                    queueUp.add(fromWho);
-                } else {
-                    queueUp.add(fromWho);
-                }
-            } else {
-                if (delta){
-                    queueDown.add(fromWho);
-                } else {
-                    queueOfFloors.add(fromWho);
-                }
-            }
-        }
+        //TODO do!
+        //TODO why not put??
+        //TODO take it easy!!!
     }
 
     public AtomicBoolean getIsIterable() {
@@ -137,46 +102,78 @@ public class ElevatorOverTheGround extends Elevator implements Runnable {
         return  currentFloor.get();
     }
 
-    public boolean getUpTrip(){ return upTrip; }
+    public boolean getUpTrip(){ return upTrip.get(); }
 
     /** Главная функция этого класса. */
     public void run() {
         while (!isIterable.get()) {
-            //TODO sort queueFloors!!
-            //TODO sort queueFloors!!
-            targetFloor.set(getNextFloor());
-            setUpTrip(targetFloor.get());
-            int floors = getCountOfFloors(targetFloor.get());
+            sortQueue();
+            requiredFloor.set(getNextFloor(upTrip.get()));
+
+    if (requiredFloor.get() > 0) {
+        System.out.println("requiredFloor = "+requiredFloor);
+    }
+            if (!catchChangeUpTrip(requiredFloor.get())) {
+                System.out.println("Elevator has changed the direction of moving!");
+                queueOfFloors.add(requiredFloor.get());
+                sortQueue();
+                requiredFloor.set(getNextFloor(upTrip.get()));
+            }
+    if (requiredFloor.get() > 0) {
+        System.out.println("requiredFloor = "+requiredFloor);
+    }
+            int floors = getCountOfFloors(requiredFloor.get());
             if (floors != 0) {
                 moving(floors);
-                openCloseDoors(targetFloor.get());
-            } else {
-                System.out.println("The Elevator on this floor yet!!");
+                openCloseDoors(requiredFloor.get());
+            }
+        }
+    }
+
+    /**
+     * Сортировка очереди.
+     */
+    public void sortQueue(){
+        int size = queueOfFloors.size();
+        if (size > 1) {
+            Integer array1[] = new Integer[size];
+            queueOfFloors.toArray(array1);
+            for (int i = 0; i < size; i++) {
+                queueOfFloors.remove(array1[i]);
+            }
+            Arrays.sort(array1, (Integer x, Integer y) -> (x < y) ? -1 : ((x == y) ? 0 : 1));
+            for(int i = 0; i < size; i++) {
+                queueOfFloors.add(array1[i]);
+                System.out.print("\t"+array1[i]+"\n");
             }
         }
     }
 
     /** @return - следующий этаж. */
-    protected int getNextFloor() {
-//---------
-        //System.out.print("getNextFloor: "+"\t"); Object[] array = queueOfFloors.toArray();
-        //for(int i = 0; i < array.length; i++) { System.out.print(array[i]+"\t");}
-//-----------
+    protected int getNextFloor(boolean upTrip) {
         try {
-            return queueOfFloors.take();
+            if (upTrip) {
+                return queueOfFloors.takeFirst();
+            } else {
+                return queueOfFloors.takeLast();
+            }
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        return 0;
+        return 0;//TODO !!
     }
 
+    private boolean catchChangeUpTrip(final int nextFloor) {
+        boolean currentUpTrip = upTrip.get();
+        return currentUpTrip == checkUpTrip(nextFloor);
+    }
     /** @return направление движения лифта.
      *      <code>true</code> если движение вверх
      *      <code>false</code> если движение вниз
      *      */
-    private boolean setUpTrip(final int nextFloor) {
-        upTrip = (nextFloor > currentFloor.get()) ? true : false;
-        return upTrip;
+    private boolean checkUpTrip(final int nextFloor) {
+        upTrip.set(nextFloor > currentFloor.get());
+        return upTrip.get();
     }
 
     /** @return количество этажей. */
@@ -208,9 +205,9 @@ public class ElevatorOverTheGround extends Elevator implements Runnable {
      */
     protected void openCloseDoors(final int floor) {
         try {
-            System.out.println("Open doors on " + floor + " floor!");
+            System.out.println("\t"+"Open doors on "+floor+ " floor!");
             Thread.sleep(getGapOpenClose() * MS);
-            System.out.println("Close doors on " + floor + " floor");
+            System.out.println("\t"+"Close doors on "+floor+" floor");
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -223,7 +220,7 @@ public class ElevatorOverTheGround extends Elevator implements Runnable {
 
     /** Меняет текущий этаж. */
     private void changeCurrentFloor() {
-        if (upTrip) {
+        if (upTrip.get()) {
             currentFloor.incrementAndGet();
         } else {
             currentFloor.decrementAndGet();

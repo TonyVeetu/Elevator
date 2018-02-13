@@ -60,6 +60,8 @@ public class Controller extends Thread {
                 currentFloor = decodeFloor(str);
                 if (checkLimits(currentFloor)) {
                     injectFloor(currentFloor);
+                } else {
+                    System.out.println("Error in input!");
                 }
             }
         }
@@ -111,7 +113,7 @@ public class Controller extends Thread {
         if ((floor >= porch.getMinFloor()) && (floor <= porch.getMaxFloor())) {
             return true;
         } else {
-            System.out.println("Inputted floor is bigger than maxFloor!");
+            System.out.println("Inputted floor isn't correct, : " + floor);
             return false;
         }
     }
