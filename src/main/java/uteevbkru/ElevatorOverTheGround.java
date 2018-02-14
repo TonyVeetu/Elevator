@@ -73,14 +73,24 @@ public class ElevatorOverTheGround extends Elevator implements Runnable {
     }
 
     /** Позволяет клиентам вставить этаж в очередь.
-     *
-     * Нужно ли анализировать requiredFloor при вставке в очередь этажей?
+     *  Добавление в конец или в начало очереди скорее всего
+     *      не скажется на производительности.
+     *  Хотя наличие такой возможности в дальнейшем поможет улучшить алгоритм
      */
-
-    public void  putInQueueForClient(final Integer fromWho, final boolean direction) {
-        //TODO do!
-        //TODO why not put??
-        //TODO take it easy!!!
+    public void  putInQueueForClient(final Integer fromWho, final boolean direction) throws InterruptedException{
+        if (upTrip.get()) {
+            if (direction) {
+                queueOfFloors.putFirst(fromWho);
+            } else {
+                queueOfFloors.putLast(fromWho);
+            }
+        } else {
+            if (direction) {
+                queueOfFloors.putFirst(fromWho);
+            } else {
+                queueOfFloors.putLast(fromWho);
+            }
+        }
     }
 
     public AtomicBoolean getIsIterable() {
@@ -131,7 +141,7 @@ public class ElevatorOverTheGround extends Elevator implements Runnable {
     }
 
     /**
-     * Сортировка очереди.
+     * Сортировка очереди по возрастанию.
      */
     public void sortQueue(){
         int size = queueOfFloors.size();

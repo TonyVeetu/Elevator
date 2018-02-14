@@ -57,7 +57,11 @@ public class ClientsHandler implements Runnable {
         }
     }
 
-    private void injectFloors(){
-        elevator.putInQueueForClient(fromWho, direction);
+    private void injectFloors() {
+        try {
+            elevator.putInQueueForClient(fromWho, direction);
+        } catch (InterruptedException e) {
+            System.out.println("Injection Floor for Client: " + fromWho + ", has been failed!");
+        }
     }
 }
