@@ -39,9 +39,9 @@ public class ElevatorOverTheGround extends Elevator implements Runnable {
     private long timeForOneFloor;
     /** Подъезд. */
     private Porch porch;
-
-    private static int Q = 10;//TODO think about capacity!
-
+    /** Коэффициент запаса. */
+    private static int Q = 10;
+    /** Направление движения лифта */
     private AtomicBoolean upTrip = new AtomicBoolean(true);
     
     /** Конструктор. */
@@ -60,7 +60,7 @@ public class ElevatorOverTheGround extends Elevator implements Runnable {
 
     public boolean putInQueueForController(Integer floor) {
         try {
-            if (floor >= porch.getMinFloor() && floor <= porch.getMaxFloor() ) {
+            if (checkFloor(floor)) {
                 queueOfFloors.put(floor);
                 return true;
             } else {
@@ -72,23 +72,33 @@ public class ElevatorOverTheGround extends Elevator implements Runnable {
         return false;
     }
 
+    private boolean checkFloor(Integer floor) {
+        if (floor >= porch.getMinFloor() && floor <= porch.getMaxFloor()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     /** Позволяет клиентам вставить этаж в очередь.
      *  Добавление в конец или в начало очереди скорее всего
      *      не скажется на производительности.
      *  Хотя наличие такой возможности в дальнейшем поможет улучшить алгоритм
      */
     public void  putInQueueForClient(final Integer fromWho, final boolean direction) throws InterruptedException{
-        if (upTrip.get()) {
-            if (direction) {
-                queueOfFloors.putFirst(fromWho);
+        if (checkFloor(fromWho)) {
+            if (upTrip.get()) {
+                if (direction) {
+                    queueOfFloors.putFirst(fromWho);
+                } else {
+                    queueOfFloors.putLast(fromWho);
+                }
             } else {
-                queueOfFloors.putLast(fromWho);
-            }
-        } else {
-            if (direction) {
-                queueOfFloors.putFirst(fromWho);
-            } else {
-                queueOfFloors.putLast(fromWho);
+                if (direction) {
+                    queueOfFloors.putFirst(fromWho);
+                } else {
+                    queueOfFloors.putLast(fromWho);
+                }
             }
         }
     }
@@ -109,10 +119,10 @@ public class ElevatorOverTheGround extends Elevator implements Runnable {
 
     /** @return текущий этаж. */
     public int getCurrentFloor() {
-        return  currentFloor.get();
+        return currentFloor.get();
     }
 
-    public boolean getUpTrip(){ return upTrip.get(); }
+    public boolean getUpTrip() { return upTrip.get(); }
 
     /** Главная функция этого класса. */
     public void run() {
@@ -154,7 +164,6 @@ public class ElevatorOverTheGround extends Elevator implements Runnable {
             Arrays.sort(array1, (Integer x, Integer y) -> (x < y) ? -1 : ((x == y) ? 0 : 1));
             for(int i = 0; i < size; i++) {
                 queueOfFloors.add(array1[i]);
-                System.out.print("\t"+array1[i]+"\n");
             }
         }
     }
@@ -170,7 +179,7 @@ public class ElevatorOverTheGround extends Elevator implements Runnable {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        return 0;//TODO !!
+        return 0;
     }
 
     private boolean catchChangeUpTrip(final int nextFloor) {

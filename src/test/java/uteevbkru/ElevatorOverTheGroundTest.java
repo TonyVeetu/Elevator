@@ -1,6 +1,8 @@
 package uteevbkru;
 
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import uteevbkru.porch.Porch;
 
@@ -10,7 +12,7 @@ public class ElevatorOverTheGroundTest {
     private ElevatorOverTheGround elevator;
     private Porch porch;
 
-    @org.junit.Before
+    @Before
     public void setUp() {
         int countOfFloors = 10;
         double speed = 2.0;
@@ -25,7 +27,7 @@ public class ElevatorOverTheGroundTest {
         }
     }
 
-    @org.junit.After
+    @After
     public void tearDown() throws Exception {
     }
 
@@ -69,6 +71,32 @@ public class ElevatorOverTheGroundTest {
         }
         Assert.assertEquals(true, time);
     }
+
+    @Test
+    public void putInQueueForClientTest(){
+        int countOfFloors = 2;
+        double speed = 2.0;
+        double floorHeight = 2.0;
+        int gapOpenClose = 2;
+        Porch porch;
+        ElevatorOverTheGround elevator;
+        try {
+            porch = new Porch(countOfFloors, floorHeight);
+            elevator = new ElevatorOverTheGround(porch, speed, gapOpenClose);
+        } catch (IOException e ){
+            return;
+        }
+        Thread t = new Thread(elevator);
+        t.start();
+
+        try {
+            elevator.putInQueueForClient(4, true);
+            elevator.putInQueueForClient(2, true);
+            elevator.putInQueueForClient(5, true);
+        } catch (InterruptedException e){ }
+        //TODO!!!!
+    }
+
 
     @Test
     public void badConstrictorTest(){

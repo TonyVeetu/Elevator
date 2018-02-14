@@ -5,58 +5,54 @@ import java.net.Socket;
 import java.util.Scanner;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+/**
+ * Что бы вызвать лифт необходимо ввести в консоль 1 или 0.
+ * Значение орпеделяет направление желаемого движения
+ * Вверх или вниз. Если вы нажали 1,
+ * то лифт откроет двери тогда когда будет ехать вверх.
+ */
+
 public class Floor implements Runnable{
     /** Показывает прерваны ли потоки. */
     private static AtomicBoolean isIterable = new AtomicBoolean(false);
-    /** Для считывания данных с консоли. */
+    /** Для считывания данных из консоли. */
     private Scanner scanner;
 
     private final String regex = ", ";
 
-    //TODO передавать эти переменные!
-    //Нужны для проверки правильного создания клиента-этажа!
-
-    private static int MIN_FLOOR = 0;
-    private static int MAX_FLOOR = 5;
-    private int clientFloor = -1;
-    private static Socket socket;
+    private int clientFloor;
+    //private static Socket socket;
 
     /**
      * Конструктор для создания клиента-этажа!
-     * @param clientFloor - этаж который будет эмитировать клиент!
+     * @param clientFloor - номер этажа-клиента!
+     *
+     * Если нет соединения с сервером, то поток должен завершит свою работу
      */
     public Floor(int clientFloor) {
-        if (clientFloor > MIN_FLOOR && clientFloor <= MAX_FLOOR) {
-            this.clientFloor = clientFloor;
-            if (setUpConnection()) {
-                scanner = new Scanner(System.in);
-            }
-        }
-        else {
-            System.out.println("The threshold has been exceeded by the number of clients!");
-        }
-        System.out.println(this.clientFloor + " clientFloor was been created!");
+        this.clientFloor = clientFloor;
+        scanner = new Scanner(System.in);
+        System.out.println(this.clientFloor + " clientFloor has been created!");
     }
 
     public void run() {
-        try ( DataOutputStream oos = new DataOutputStream(socket.getOutputStream())) {
-            while (!(isIterable.get())) {
-                if (scanner != null) {
-                    if (scanner.hasNext()) {
-                        String str = scanner.nextLine();
-                        if (!checkForStop(str)) {
-                            oos.writeUTF("stop");
-                            oos.flush();
-                            break;
-                        } else {
-                            int floor = checkInput(str);
-                            if (floor != -1) {
-                                boolean direction = findDirection(floor);
-                                System.out.println(packMsg(direction));
-                                oos.writeUTF(packMsg(direction));
-                                oos.flush(); //TODO разобраться!
-                            }
-                        }
+        Socket socket = setUpConnection();
+        if (socket != null) {
+            workWithScannerAndOutputStream(socket);
+        }
+    }
+
+    private void workWithScannerAndOutputStream(Socket socket) {
+        try (DataOutputStream outputStream = new DataOutputStream(socket.getOutputStream())) {
+            while(!isIterable.get()) {
+                if (scanner.hasNext()) {
+                    String str = scanner.nextLine();
+                    int direction = checkInput(str);
+                    if (direction != -1) {
+                        boolean dir = findDirection(direction);
+                        System.out.println(packMsg(dir));
+                        outputStream.writeUTF(packMsg(dir));
+                        outputStream.flush();
                     }
                 }
             }
@@ -65,23 +61,15 @@ public class Floor implements Runnable{
         }
     }
 
+
     private String packMsg(boolean direction){
         return clientFloor + regex + direction;
     }
 
-    protected boolean checkForStop(final String iStr) {
-        if (iStr.equals("Stop") || iStr.equals("stop")
-                || iStr.equals("стоп") || iStr.equals("Стоп")) {
-            isIterable.set(true);
-            return false;
-        }
-        return true;
-    }
-
     /**
-     * Определяет какое число было введено.
-     * @param str - введенное число String
-     * @return число int
+     * Декодирует String в int.
+     * @param str - введенный String
+     * @return - число int
      */
     protected int checkInput(final String str) {
         int number = -1;
@@ -94,27 +82,24 @@ public class Floor implements Runnable{
     }
 
     /**
-     * Определяет вверх или вниз поедет пользователь.
+     * Определяет вверх или вниз хочет поехать пользователь.
      * В консоль вводиться 0 или 1
      */
     protected boolean findDirection(int floor){
-        return floor >= 1 ? true : false;
+        return floor >= 1;
     }
 
     /**
      * Устанавливает соединение с серверным сокетом.
      * @return true - установлено, false - не установлено
      */
-
-    private boolean setUpConnection(){
+    private Socket setUpConnection(){
         try {
-            socket = new Socket("localhost", 4444);
-            return true;
+            return new Socket("localhost", 4444);
         } catch (Exception e) {
-            System.out.println("Connection refused!");
             e.printStackTrace();
         }
-        return false;
+        return null;
     }
 }
 
