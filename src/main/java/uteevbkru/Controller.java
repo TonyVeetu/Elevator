@@ -46,6 +46,7 @@ public class Controller extends Thread {
     }
 
     /** Главная функция этого класса. */
+    @Override
     public void run() {
         Integer currentFloor = 0;
         while (!isIterable.get()) {

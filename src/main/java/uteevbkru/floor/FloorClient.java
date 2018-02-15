@@ -46,6 +46,7 @@ public class FloorClient implements Runnable{
     }
 
     /** Если нет соединения с сервером, то поток завершит свою работу. */
+    @Override
     public void run() {
         Socket socket = setUpConnection();
         if (socket != null) {

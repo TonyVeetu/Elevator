@@ -109,6 +109,7 @@ public class ElevatorOverTheGround extends Elevator implements Runnable {
     public boolean getUpTrip() { return upTrip.get(); }
 
     /** Главная функция этого класса. */
+    @Override
     public void run() {
         while (!isIterable.get()) {
             sortQueue();
