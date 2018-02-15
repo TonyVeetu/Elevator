@@ -10,14 +10,15 @@ import java.util.concurrent.BlockingQueue;
 
 public class ClientsHandler implements Runnable {
 
-    private static Socket clientDialog;
+    private Socket clientDialog;
     private int fromWho;
+    /** Вверх или вниз хочет поехать пользователь. */
     private boolean direction;
     private final String regex = ", ";
     private ElevatorOverTheGround elevator;
 
     public ClientsHandler(Socket client, ElevatorOverTheGround elevatorOverTheGround) {
-        ClientsHandler.clientDialog = client;
+        this.clientDialog = client;
         elevator = elevatorOverTheGround;
     }
 
@@ -27,17 +28,12 @@ public class ClientsHandler implements Runnable {
             DataInputStream in = new DataInputStream(clientDialog.getInputStream());
             while (!clientDialog.isClosed()) {
                 String entry = in.readUTF();
-                if (entry.equalsIgnoreCase("stop")) { // TODO убрать stop!
-                    break;
-                } else {
-                    unpackMsg(entry);
-                    System.out.println("READ from client " + fromWho + ": direction - " + direction);
-                    injectFloors();
-                }
+                unpackMsg(entry);
+                System.out.println("READ from client " + fromWho + ": direction - " + direction);
+                injectFloor();
             }
             in.close();
             clientDialog.close();
-            System.out.println("Closing connections & channels - DONE.");
         } catch (EOFException e ){
             System.out.println("EOFException!");
         } catch (IOException e) {
@@ -57,7 +53,7 @@ public class ClientsHandler implements Runnable {
         }
     }
 
-    private void injectFloors() {
+    private void injectFloor() {
         try {
             elevator.putInQueueForClient(fromWho, direction);
         } catch (InterruptedException e) {

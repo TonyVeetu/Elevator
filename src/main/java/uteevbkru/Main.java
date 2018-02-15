@@ -1,12 +1,9 @@
 package uteevbkru;
 
-import uteevbkru.elevator.ServerForElevator;
+import uteevbkru.elevator.ElevatorsServer;
 import uteevbkru.porch.Porch;
 
 import java.io.IOException;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /** Main класс. */
 public class Main {
@@ -28,7 +25,7 @@ public class Main {
         int countOfFloors = 5;
         double speed = 2.3;
         double floorHeight = 2.0;
-        int gapOpenClose = 2;
+        int gapOpenClose = 5;
 
         try {
             porch = new Porch(countOfFloors, floorHeight);
@@ -40,7 +37,7 @@ public class Main {
         elevator.start();
         Controller controller = new Controller(elevatorOver, porch);
         controller.start();
-        ServerForElevator server = new ServerForElevator(countOfFloors, elevatorOver);
+        ElevatorsServer server = new ElevatorsServer(countOfFloors, elevatorOver);
         server.startServer();
     }
 }

@@ -1,5 +1,7 @@
 package uteevbkru.floor;
 
+import uteevbkru.elevator.ElevatorsServer;
+
 import java.io.*;
 import java.net.Socket;
 import java.util.Scanner;
@@ -95,7 +97,7 @@ public class Floor implements Runnable{
      */
     private Socket setUpConnection(){
         try {
-            return new Socket("localhost", 4444);
+            return new Socket("localhost", ElevatorsServer.PORT);
         } catch (Exception e) {
             e.printStackTrace();
         }
