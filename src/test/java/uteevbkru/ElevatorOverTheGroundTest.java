@@ -43,7 +43,11 @@ public class ElevatorOverTheGroundTest {
 
     @Test
     public void getNextFloorTest(){
-        elevator.putInQueueForController(5);
+        try {
+            elevator.putInQueueForController(5);
+        } catch (InterruptedException e){
+            e.printStackTrace();
+        }
         Assert.assertEquals(5,elevator.getNextFloor(true));
     }
 

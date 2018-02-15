@@ -29,7 +29,7 @@ public class ElevatorsServer {
                 executeService.execute(new ClientsHandler(client, elevator));
                 System.out.println("Connection accepted.");
             }
-            executeService.shutdown();
+            executeService.shutdownNow();
             System.out.println("Server has been shutdown!");
         } catch (IOException e) {
             e.printStackTrace();

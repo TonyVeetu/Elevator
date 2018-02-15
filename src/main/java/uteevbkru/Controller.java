@@ -92,6 +92,8 @@ public class Controller extends Thread {
             isIterable.set(true);
             injectFloor(iFloor); // Добавляем в очередь предыдущее значение,
             // что бы вытащий поток ElevatorOverTheGround из цикла while при введенном Stop!
+            System.out.println("Стоп нажали, isIterable - " + isIterable);
+
             return false;
         }
         return true;
@@ -121,11 +123,13 @@ public class Controller extends Thread {
     /** Вставляет этаж "введенный пользовтелем в лифте" в очередь.
      * @return <code>true</code> значение вставилось
      *         <code>false</code> значение не вставилось
-     *
-     *  Не учитывается направление движения лифта!
      */
-
     protected boolean injectFloor(final Integer floor) {
-         return elevatorOver.putInQueueForController(floor);
+        try {
+            return elevatorOver.putInQueueForController(floor);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 }

@@ -53,21 +53,21 @@ public class ElevatorOverTheGround extends Elevator implements Runnable {
         findTimeForOneFloor();
     }
 
-
-    public boolean putInQueueForController(Integer floor) {
-        try {
-            if (checkFloor(floor)) {
-                queueOfFloors.put(floor);
-                return true;
-            } else {
-                return false;
-            }
-        } catch (InterruptedException | NullPointerException | ClassCastException | IllegalArgumentException e) {
-            e.printStackTrace();
+    /** Позволяет Controller вставить этаж в очередь. */
+    public boolean putInQueueForController(Integer floor) throws InterruptedException {
+        if (checkFloor(floor)) {
+            queueOfFloors.put(floor);
+            return true;
+        } else {
+            return false;
         }
-        return false;
     }
 
+    /** Проверка вводимого этажа
+     * @param floor необходимый этаж
+     * @return <code>true</code>  проверка пройдена
+     *
+     */
     private boolean checkFloor(Integer floor) {
         if (floor >= porch.getMinFloor() && floor <= porch.getMaxFloor()) {
             return true;
@@ -77,9 +77,8 @@ public class ElevatorOverTheGround extends Elevator implements Runnable {
     }
 
     /** Позволяет клиентам вставить этаж в очередь.
-     *  Добавление в конец или в начало очереди скорее всего
-     *      не скажется на производительности.
-     *  Хотя наличие такой возможности в дальнейшем поможет улучшить алгоритм
+     *  @param fromWho - от какого этажа последовал вызов
+     *  @param direction - избыточен сейчас, но может потребоваться при дальнейшем усовершенствовании алгоритма
      */
     public void  putInQueueForClient(final Integer fromWho, final boolean direction) throws InterruptedException{
         if (checkFloor(fromWho)) {
@@ -106,15 +105,14 @@ public class ElevatorOverTheGround extends Elevator implements Runnable {
         return currentFloor.get();
     }
 
+    /** @return <code>upTrip</code> */
     public boolean getUpTrip() { return upTrip.get(); }
 
     /** Главная функция этого класса. */
     public void run() {
         while (!isIterable.get()) {
             sortQueue();
-
             requiredFloor.set(getNextFloor(upTrip.get()));
-
             if (!catchChangeUpTrip(requiredFloor.get())) {
                 System.out.println("Elevator has changed the direction of moving!");
                 queueOfFloors.add(requiredFloor.get());
@@ -152,7 +150,9 @@ public class ElevatorOverTheGround extends Elevator implements Runnable {
         }
     }
 
-    /** @return - следующий этаж. */
+    /** @return - следующий этаж.
+     * @param upTrip направление движения лифта
+     */
     protected int getNextFloor(boolean upTrip) {
         try {
             if (upTrip) {
@@ -169,16 +169,18 @@ public class ElevatorOverTheGround extends Elevator implements Runnable {
     /** Определяет меняет ли лифт направление движения.
      * @return true - если направление не изменилось
      *         false - если направление изменилось
-     * */
+     * @param nextFloor - следующий этаж
+     */
 
     private boolean catchChangeUpTrip(final int nextFloor) {
         boolean currentUpTrip = upTrip.get();
         return currentUpTrip == checkUpTrip(nextFloor);
     }
+
     /** @return направление движения лифта.
      *      <code>true</code> если движение вверх
      *      <code>false</code> если движение вниз
-     *      */
+     */
     private boolean checkUpTrip(final int nextFloor) {
         upTrip.set(nextFloor >= currentFloor.get());
         return upTrip.get();
@@ -202,7 +204,7 @@ public class ElevatorOverTheGround extends Elevator implements Runnable {
         }
     }
 
-    /** @retun время необходимое для проезда одного этажа. */
+    /** @return время необходимое для проезда одного этажа. */
     public long getTimeForOneFloor() {
         return timeForOneFloor;
     }

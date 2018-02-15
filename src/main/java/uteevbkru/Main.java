@@ -39,5 +39,9 @@ public class Main {
         controller.start();
         ElevatorsServer server = new ElevatorsServer(countOfFloors, elevatorOver);
         server.startServer();
+
+        /** Программа закончит свою работу
+         *  когда каждый установивший соединение клиент закончит свою работу
+         */
     }
 }
