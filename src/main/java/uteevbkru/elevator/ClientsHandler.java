@@ -57,7 +57,7 @@ public class ClientsHandler implements Runnable {
         try {
             elevator.putInQueueForClient(fromWho, direction);
         } catch (InterruptedException e) {
-            System.out.println("Injection Floor for Client: " + fromWho + ", has been failed!");
+            System.out.println("Injection FloorClient for Client: " + fromWho + ", has been failed!");
         }
     }
 }
