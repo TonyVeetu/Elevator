@@ -6,22 +6,37 @@ import java.io.DataInputStream;
 import java.io.EOFException;
 import java.io.IOException;
 import java.net.Socket;
-import java.util.concurrent.BlockingQueue;
+
+/**
+ * Базовый класс - Обработчик клиентов.
+ *
+ * @author Uteev Anton
+ *
+ * @version 1.0.1
+ */
 
 public class ClientsHandler implements Runnable {
-
+    /** Сокет для соединения с сервером. */
     private Socket clientDialog;
+    /** На какой этаж вызывают лифт. */
     private int fromWho;
     /** Вверх или вниз хочет поехать пользователь. */
     private boolean direction;
-    private final String regex = ", ";
+    /** Константа для формирования сообщения. */
+    private static final String regex = ", ";
+    /** Лифт. */
     private ElevatorOverTheGround elevator;
 
+    /** Конструктор.
+     * @param client сокет для соединения с лифтом
+     * @param elevatorOverTheGround лифт
+     */
     public ClientsHandler(Socket client, ElevatorOverTheGround elevatorOverTheGround) {
         this.clientDialog = client;
         elevator = elevatorOverTheGround;
     }
 
+    /** Переопределенный метод Runnable. */
     @Override
     public void run() {
         try {
@@ -30,7 +45,7 @@ public class ClientsHandler implements Runnable {
                 String entry = in.readUTF();
                 unpackMsg(entry);
                 System.out.println("READ from client " + fromWho + ": direction - " + direction);
-                injectFloor();
+                putIntoTheElevator();
             }
             in.close();
             clientDialog.close();
@@ -41,6 +56,9 @@ public class ClientsHandler implements Runnable {
         }
     }
 
+    /** Распаковка сообщения.
+     * @param str - считанный с входного потока данных String
+     */
     private void unpackMsg(String str){
         try {
             String prom[] = str.split(regex);
@@ -53,7 +71,8 @@ public class ClientsHandler implements Runnable {
         }
     }
 
-    private void injectFloor() {
+    /** Передает в Лифт параметры (от кого и направление движения). */
+    private void putIntoTheElevator() {
         try {
             elevator.putInQueueForClient(fromWho, direction);
         } catch (InterruptedException e) {
