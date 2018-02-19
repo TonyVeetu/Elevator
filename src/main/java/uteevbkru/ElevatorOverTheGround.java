@@ -4,6 +4,7 @@ import uteevbkru.elevator.Elevator;
 import uteevbkru.porch.Porch;
 
 import java.io.IOException;
+import java.sql.Time;
 import java.util.AbstractQueue;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,11 +32,11 @@ public class ElevatorOverTheGround extends Elevator implements Runnable {
     private AtomicInteger requiredFloor = new AtomicInteger(0);
     /** Очередь этажей. */
     private LinkedBlockingDeque<Integer> queueOfFloors;
-    /** Показывает прерваны ли потоки.*/
+    /** Показывает прерваны ли потоки. */
     private AtomicBoolean isIterable;
-    /** Количество миллисекуд в секунде. */
+    /** Количество миллисекунд в секунде. */
     private static final int MS = 1000;
-    /** Время для одного преодаления одного этажа. */
+    /** Время для преодаления одного этажа. */
     private long timeForOneFloor;
     /** Подъезд. */
     private Porch porch;
@@ -43,7 +44,7 @@ public class ElevatorOverTheGround extends Elevator implements Runnable {
     private static int Q = 10;
     /** Направление движения лифта */
     private AtomicBoolean upTrip = new AtomicBoolean(true);
-    
+
     /** Конструктор. */
     public ElevatorOverTheGround(Porch porch, final double speed, final int gapOpenClose) throws IOException {
         super(speed, gapOpenClose);
