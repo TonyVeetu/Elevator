@@ -4,8 +4,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import uteevbkru.elevator.Elevator;
 
-import java.io.IOException;
-
 public class ElevatorTest {
 
     @Test(expected = IllegalArgumentException.class)

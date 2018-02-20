@@ -1,17 +1,12 @@
 package uteevbkru.floor;
 
 import uteevbkru.elevator.ElevatorsServer;
-
 import java.io.*;
 import java.net.Socket;
 import java.util.Scanner;
 
-
-/**
- * Класс Этаж-клиент.
- *
+/**Класс Этаж-клиент
  * @author Uteev Anton
- *
  * @version 1.0.1
  *
  * Этот класс эмитируте вызов лифта на этаж.

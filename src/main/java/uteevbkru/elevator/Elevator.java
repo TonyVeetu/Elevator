@@ -1,12 +1,7 @@
 package uteevbkru.elevator;
 
-import java.io.IOException;
-
-/**
- * Базовый класс - Лифт.
- *
+/**Базовый класс - Лифт
  * @author Uteev Anton
- *
  * @version 1.0.1
  */
 

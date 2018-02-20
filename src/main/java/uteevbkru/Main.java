@@ -3,9 +3,6 @@ package uteevbkru;
 import uteevbkru.elevator.ElevatorsServer;
 import uteevbkru.porch.Porch;
 
-import java.io.IOException;
-
-/** Main класс. */
 public class Main {
 
     /** Главная функция проекта.
@@ -36,7 +33,7 @@ public class Main {
         Controller controller = new Controller(elevatorOver, porch);
         controller.start();
         ElevatorsServer server = new ElevatorsServer(countOfFloors, elevatorOver);
-        server.startServer();
+        server.startUp();
 
         /** Программа закончит свою работу
          *  когда каждый установивший соединение клиент закончит свою работу

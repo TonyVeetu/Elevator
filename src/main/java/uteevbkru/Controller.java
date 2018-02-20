@@ -1,23 +1,15 @@
 package uteevbkru;
 
 import uteevbkru.porch.Porch;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
-import java.util.concurrent.atomic.AtomicBoolean;
 
-/**
- * Класс обрабатывает введенное число пользователем.
- *
+/**Класс обрабатывает введенное число пользователем.
  * @author Uteev Anton
- *
  * @version 1.0.1
- *
  */
 public class Controller extends Thread {
-    /** Показывает прерваны ли потоки. */
-    private AtomicBoolean isIterable;
     /** Для считывания данных с консоли. */
     private Scanner scanner;
     /** Лифт. */
@@ -33,7 +25,6 @@ public class Controller extends Thread {
     public Controller(final ElevatorOverTheGround elevatorOver, Porch porch) {
         this.porch = porch;
         this.elevatorOver = elevatorOver;
-        this.isIterable = elevatorOver.getIsIterable();
         scanner = new Scanner(System.in);
     }
 
@@ -41,22 +32,18 @@ public class Controller extends Thread {
     public Controller(final ElevatorOverTheGround elevatorOver, Porch porch, final boolean isFile) {
         this.porch = porch;
         this.elevatorOver = elevatorOver;
-        this.isIterable = elevatorOver.getIsIterable();
         this.isFile = isFile;
     }
 
     /** Главная функция этого класса. */
     @Override
     public void run() {
-        Integer currentFloor = 0;
-        while (!isIterable.get()) {
+        Integer currentFloor;
+        while (true) {
             if (scanner.hasNext()) {
                 String str = scanner.nextLine();
                 if (isFile) {
                     System.out.println(str);
-                }
-                if (!checkForStop(str, currentFloor)) {
-                    break;
                 }
                 currentFloor = decodeFloor(str);
                 if (checkLimits(currentFloor)) {
@@ -66,7 +53,6 @@ public class Controller extends Thread {
                 }
             }
         }
-        scanner.close();
     }
 
     /** Инициализирует Scanner для чтения из файла. */
@@ -76,28 +62,6 @@ public class Controller extends Thread {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-    }
-
-    /** Возвращает состояние переменной isIterable. */
-    protected boolean getIsIterable() {
-        return isIterable.get();
-    }
-    
-    /** Останавливает потоки при вводе строки "Stop".
-     * @param iStr входная строка
-     * @param iFloor этаж
-     * @return <code>true</code> если не нужно остановить потоки
-     */
-    protected boolean checkForStop(final String iStr, final int iFloor) {
-        if (iStr.equals("Stop") || iStr.equals("stop") || iStr.equals("стоп") || iStr.equals("Стоп")) {
-            isIterable.set(true);
-            injectFloor(iFloor); // Добавляем в очередь предыдущее значение,
-            // что бы вытащий поток ElevatorOverTheGround из цикла while при введенном Stop!
-            System.out.println("Стоп нажали, isIterable - " + isIterable);
-
-            return false;
-        }
-        return true;
     }
 
     /** Превращает строковое значение этажа в число. */
@@ -113,7 +77,7 @@ public class Controller extends Thread {
      *         <code>false</code> в противном случаи
      */
     protected boolean checkLimits(final Integer floor){
-        if ((floor >= porch.getMinFloor()) && (floor <= porch.getMaxFloor())) {
+        if (floor >= Porch.ZERO_FLOOR && floor <= porch.getMaxFloor()) {
             return true;
         } else {
             System.out.println("Inputted floor isn't correct, : " + floor);

@@ -1,17 +1,13 @@
 package uteevbkru.elevator;
 
 import uteevbkru.ElevatorOverTheGround;
-
 import java.io.DataInputStream;
 import java.io.EOFException;
 import java.io.IOException;
 import java.net.Socket;
 
-/**
- * Базовый класс - Обработчик клиентов.
- *
+/**Базовый класс - Обработчик клиентов.
  * @author Uteev Anton
- *
  * @version 1.0.1
  */
 
@@ -44,13 +40,13 @@ public class ClientsHandler implements Runnable {
             while (!clientDialog.isClosed()) {
                 String entry = in.readUTF();
                 unpackMsg(entry);
-                System.out.println("READ from client " + fromWho + ": direction - " + direction);
                 putIntoTheElevator();
             }
             in.close();
             clientDialog.close();
         } catch (EOFException e ){
             System.out.println("EOFException!");
+            //TODO
         } catch (IOException e) {
             e.printStackTrace();
         }

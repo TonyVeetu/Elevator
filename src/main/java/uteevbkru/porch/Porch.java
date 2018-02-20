@@ -1,17 +1,13 @@
 package uteevbkru.porch;
 
-import java.io.IOException;
-
-/**
- * Класс Подъезд.
+/**Класс Подъезд.
  * @author Uteev Anton
  * @version 1.0.1
- *
  */
 
 public class Porch {
     /** @param Минимальный этаж*/
-    private final static int ZERO_FLOOR = 1;
+    public final static int ZERO_FLOOR = 1;
     /** @param Максимальный этаж */
     private int maxFloor;
     /** @param Высота этажа */
@@ -29,11 +25,6 @@ public class Porch {
         } else {
             throw new IllegalArgumentException("Porch: input parameters isn't correct.");
         }
-    }
-
-    /** @return минимальный этаж */
-    public final int getMinFloor() {
-        return ZERO_FLOOR;
     }
 
     /** @return  максимальный этаж*/

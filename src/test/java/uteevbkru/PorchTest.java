@@ -23,7 +23,7 @@ public class PorchTest {
 
     @Test
     public void getMinFloorTest(){
-        Assert.assertEquals(1, porch.getMinFloor());
+        Assert.assertEquals(1, Porch.ZERO_FLOOR);
     }
 
     @Test(expected = IllegalArgumentException.class)

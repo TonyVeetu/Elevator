@@ -6,7 +6,6 @@ import org.junit.Before;
 import org.junit.Test;
 import uteevbkru.porch.Porch;
 
-import java.io.IOException;
 
 public class ElevatorOverTheGroundTest {
     private ElevatorOverTheGround elevator;

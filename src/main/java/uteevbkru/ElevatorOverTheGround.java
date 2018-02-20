@@ -2,27 +2,14 @@ package uteevbkru;
 
 import uteevbkru.elevator.Elevator;
 import uteevbkru.porch.Porch;
-
-import java.io.IOException;
-import java.sql.Time;
-import java.util.AbstractQueue;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
-import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
-/**
- * Класс Лифт без подземных этажей.
- *
+/**Класс Лифт без подземных этажей.
  * @author Uteev Anton
- *
  * @version 1.0.1
- *
  */
 
 public class ElevatorOverTheGround extends Elevator implements Runnable {
@@ -32,8 +19,6 @@ public class ElevatorOverTheGround extends Elevator implements Runnable {
     private AtomicInteger requiredFloor = new AtomicInteger(0);
     /** Очередь этажей. */
     private LinkedBlockingDeque<Integer> queueOfFloors;
-    /** Показывает прерваны ли потоки. */
-    private AtomicBoolean isIterable;
     /** Количество миллисекунд в секунде. */
     private static final int MS = 1000;
     /** Время для преодаления одного этажа. */
@@ -50,7 +35,6 @@ public class ElevatorOverTheGround extends Elevator implements Runnable {
         super(speed, gapOpenClose);
         this.porch = porch;
         queueOfFloors = new LinkedBlockingDeque<>(porch.getMaxFloor()*Q);
-        isIterable = new AtomicBoolean(false);
         findTimeForOneFloor();
     }
 
@@ -70,11 +54,7 @@ public class ElevatorOverTheGround extends Elevator implements Runnable {
      *
      */
     private boolean checkFloor(Integer floor) {
-        if (floor >= porch.getMinFloor() && floor <= porch.getMaxFloor()) {
-            return true;
-        } else {
-            return false;
-        }
+        return floor >= Porch.ZERO_FLOOR && floor <= porch.getMaxFloor();
     }
 
     /** Позволяет клиентам вставить этаж в очередь.
@@ -85,10 +65,6 @@ public class ElevatorOverTheGround extends Elevator implements Runnable {
         if (checkFloor(fromWho)) {
             queueOfFloors.put(fromWho);
         }
-    }
-
-    public AtomicBoolean getIsIterable() {
-        return isIterable;
     }
 
     /** Расчитывает время необходимое для проезда одного этажа. */
@@ -106,13 +82,10 @@ public class ElevatorOverTheGround extends Elevator implements Runnable {
         return currentFloor.get();
     }
 
-    /** @return <code>upTrip</code> */
-    public boolean getUpTrip() { return upTrip.get(); }
-
     /** Главная функция этого класса. */
     @Override
     public void run() {
-        while (!isIterable.get()) {
+        while (true) {
             sortQueue();
             requiredFloor.set(getNextFloor(upTrip.get()));
             if (!catchChangeUpTrip(requiredFloor.get())) {
@@ -121,9 +94,6 @@ public class ElevatorOverTheGround extends Elevator implements Runnable {
                 sortQueue();
                 requiredFloor.set(getNextFloor(upTrip.get()));
             }
-    if (requiredFloor.get() > 0) {
-        System.out.println("\t\t"+"requiredFloor = "+requiredFloor);
-    }
             int floors = getCountOfFloors(requiredFloor.get());
             if (floors != 0) {
                 moving(floors);
@@ -135,7 +105,7 @@ public class ElevatorOverTheGround extends Elevator implements Runnable {
     /**
      * Сортировка очереди по возрастанию.
      */
-    public void sortQueue(){
+    private void sortQueue(){
         int size = queueOfFloors.size();
         if (size > 1) {
             Integer array1[] = new Integer[size];

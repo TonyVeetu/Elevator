@@ -4,8 +4,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import uteevbkru.porch.Porch;
-
-import java.io.IOException;
 import java.util.Scanner;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -47,28 +45,6 @@ public class ControllerTest {
         String strFloor = "a";
         int floor = controller.decodeFloor(strFloor);
         Assert.assertEquals(0, floor);
-    }
-
-    @Test
-    public void checkTest(){
-        Assert.assertEquals(false, controller.checkForStop("Stop", 5));
-    }
-
-    @Test
-    public void isIterableTest(){
-        Assert.assertEquals(false, controller.getIsIterable());
-        controller.checkForStop("Stop", 5);
-        Assert.assertEquals(true, controller.getIsIterable());
-    }
-
-    @Test
-    public void runTest(){
-        controller.initReadFromFile();
-        controller.start();
-        while (!controller.getIsIterable()){
-
-        }
-        //TODO тесты должны быть независимыми!
     }
 
     @Test
