@@ -38,7 +38,7 @@ public class ElevatorOverTheGroundTest {
 
     @Test
     public void getCountOfFloorTest(){
-        Assert.assertEquals(5, elevator.getCountOfFloors(5));
+        Assert.assertEquals(4, elevator.getCountOfFloors(5));
     }
 
     @Test
@@ -53,7 +53,7 @@ public class ElevatorOverTheGroundTest {
 
     @Test
     public void getCurrentFloor(){
-        Assert.assertEquals(0, elevator.getCurrentFloor());
+        Assert.assertEquals(1, elevator.getCurrentFloor());
     }
 
     @Test

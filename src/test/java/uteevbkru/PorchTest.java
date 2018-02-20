@@ -23,7 +23,7 @@ public class PorchTest {
 
     @Test
     public void getMinFloorTest(){
-        Assert.assertEquals(0, porch.getMinFloor());
+        Assert.assertEquals(1, porch.getMinFloor());
     }
 
     @Test(expected = IOException.class)
