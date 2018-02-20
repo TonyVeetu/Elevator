@@ -29,9 +29,7 @@ public class FloorClient implements Runnable{
     /** Номер этажа-клиента*/
     private int clientFloor;
 
-    /**
-     * Конструктор.
-     *
+    /**Конструктор.
      * @param clientFloor - номер этажа-клиента!
      */
     public FloorClient(int clientFloor) {
@@ -69,7 +67,6 @@ public class FloorClient implements Runnable{
         if (scanner.hasNext()) {
             String str = scanner.nextLine();
             int direction = checkInput(str);
-            System.out.println(direction);
             if (direction != -Integer.MAX_VALUE) {
                 boolean dir = findDirection(direction);
                 System.out.println(packMsg(dir));

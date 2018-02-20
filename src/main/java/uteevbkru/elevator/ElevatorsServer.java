@@ -29,18 +29,20 @@ public class ElevatorsServer {
         elevator = elevatorOver;
     }
 
-    /** Стартует сервер. */
+    /** Создание сокета и запуск в новом потоке обработчика клиента-этажа. */
     public void startUp() {
         try (ServerSocket server = new ServerSocket(PORT)) {
             while (true) {
                 Socket client = server.accept();
                 executeService.execute(new ClientsHandler(client, elevator));
-                System.out.println("Connection accepted.");
             }
-            //executeService.shutdownNow();
-            //System.out.println("Server has been shutdown!");
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    /** Закрытие всех потоков. */
+    public void stop() {
+        executeService.shutdownNow();
     }
 }

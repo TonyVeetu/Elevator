@@ -32,7 +32,11 @@ public class ClientsHandler implements Runnable {
         elevator = elevatorOverTheGround;
     }
 
-    /** Переопределенный метод Runnable. */
+    /** Создание входного потока,
+     * чтение сообщения,
+     * распаковка сообщения,
+     * передача параметров в лифт.
+     */
     @Override
     public void run() {
         try {
@@ -45,8 +49,7 @@ public class ClientsHandler implements Runnable {
             in.close();
             clientDialog.close();
         } catch (EOFException e ){
-            System.out.println("EOFException!");
-            //TODO
+            System.out.println("Сlient has closed the connection!");
         } catch (IOException e) {
             e.printStackTrace();
         }
