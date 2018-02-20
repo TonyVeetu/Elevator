@@ -8,8 +8,6 @@ import java.io.IOException;
 /** Main класс. */
 public class Main {
 
-    private static Porch porch;
-    private static ElevatorOverTheGround elevatorOver;
     /** Главная функция проекта.
      * @param args  1 = количество этажей
      *              2 = скорость движения лифта в м/с
@@ -27,12 +25,8 @@ public class Main {
         double floorHeight = 2.0;
         int gapOpenClose = 5;
 
-        try {
-            porch = new Porch(countOfFloors, floorHeight);
-            elevatorOver = new ElevatorOverTheGround(porch, speed, gapOpenClose);
-        } catch (IOException e) {
-            return;
-        }
+        Porch porch = new Porch(countOfFloors, floorHeight);
+        ElevatorOverTheGround elevatorOver = new ElevatorOverTheGround(porch, speed, gapOpenClose);
         Thread elevator = new Thread(elevatorOver);
         elevator.start();
         Controller controller = new Controller(elevatorOver, porch);

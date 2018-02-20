@@ -19,12 +19,8 @@ public class ElevatorOverTheGroundTest {
         double floorHeight = 2.0;
         int gapOpenClose = 2;
 
-        try {
-            porch = new Porch(countOfFloors, floorHeight);
-            elevator = new ElevatorOverTheGround(porch, speed, gapOpenClose);
-        } catch (IOException e ){
-            return;
-        }
+        porch = new Porch(countOfFloors, floorHeight);
+        elevator = new ElevatorOverTheGround(porch, speed, gapOpenClose);
     }
 
     @After
@@ -76,47 +72,15 @@ public class ElevatorOverTheGroundTest {
         Assert.assertEquals(true, time);
     }
 
-    @Test
-    public void putInQueueForClientTest(){
-        int countOfFloors = 2;
-        double speed = 2.0;
-        double floorHeight = 2.0;
-        int gapOpenClose = 2;
-        Porch porch;
-        ElevatorOverTheGround elevator;
-        try {
-            porch = new Porch(countOfFloors, floorHeight);
-            elevator = new ElevatorOverTheGround(porch, speed, gapOpenClose);
-        } catch (IOException e ){
-            return;
-        }
-        Thread t = new Thread(elevator);
-        t.start();
-
-        try {
-            elevator.putInQueueForClient(4, true);
-            elevator.putInQueueForClient(2, true);
-            elevator.putInQueueForClient(5, true);
-        } catch (InterruptedException e){ }
-        //TODO!!!!
-    }
-
-
-    @Test
-    public void badConstrictorTest(){
+    @Test(expected = IllegalArgumentException.class)
+    public void badConstrictorTest() throws IllegalArgumentException {
         int countOfFloors = 2;
         double speed = -2.0;
         double floorHeight = 2.0;
         int gapOpenClose = -2;
 
-        Porch porch;
-        ElevatorOverTheGround elevator;
-        try {
-            porch = new Porch(countOfFloors, floorHeight);
-            elevator = new ElevatorOverTheGround(porch, speed, gapOpenClose);
-        } catch (IOException e ){
-            return;
-        }
+        Porch porch = new Porch(countOfFloors, floorHeight);
+        ElevatorOverTheGround elevator = new ElevatorOverTheGround(porch, speed, gapOpenClose);
         Assert.assertEquals(0, elevator.getGapOpenClose());
     }
 }

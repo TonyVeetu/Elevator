@@ -46,7 +46,7 @@ public class ElevatorOverTheGround extends Elevator implements Runnable {
     private AtomicBoolean upTrip = new AtomicBoolean(true);
 
     /** Конструктор. */
-    public ElevatorOverTheGround(Porch porch, final double speed, final int gapOpenClose) throws IOException {
+    public ElevatorOverTheGround(Porch porch, final double speed, final int gapOpenClose) {
         super(speed, gapOpenClose);
         this.porch = porch;
         queueOfFloors = new LinkedBlockingDeque<>(porch.getMaxFloor()*Q);

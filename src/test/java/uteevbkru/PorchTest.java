@@ -26,9 +26,9 @@ public class PorchTest {
         Assert.assertEquals(1, porch.getMinFloor());
     }
 
-    @Test(expected = IOException.class)
-    public void badConstructorTest() throws IOException{
-        Porch p = new Porch(-2, 3);
+    @Test(expected = IllegalArgumentException.class)
+    public void badConstructorTest() throws IllegalArgumentException{
+        porch = new Porch(-2, 3);
     }
 
 }

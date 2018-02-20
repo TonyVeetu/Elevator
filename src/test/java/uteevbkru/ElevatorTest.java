@@ -8,14 +8,9 @@ import java.io.IOException;
 
 public class ElevatorTest {
 
-    @Test
-    public void badConstructorTest(){
-        Elevator elevator;
-        try {
-            elevator = new Elevator(0, -2);
-        } catch (IOException e){
-            return;
-        }
+    @Test(expected = IllegalArgumentException.class)
+    public void badConstructorTest() throws IllegalArgumentException {
+        Elevator  elevator = new Elevator(0, -2);
         Assert.assertEquals(0, elevator.getGapOpenClose());
     }
 }

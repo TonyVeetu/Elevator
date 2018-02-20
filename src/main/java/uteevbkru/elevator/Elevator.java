@@ -19,16 +19,15 @@ public class Elevator {
     /**
      * @param iSpeed скорость движения лифта
      * @param iGapOpenClose Время на открытие и закрытие дверей
-     * @throws IOException  если параметры не корректные
+     * @throws IllegalArgumentException если параметры не корректные
      *
      */
-    public Elevator(final double iSpeed, final int iGapOpenClose) throws IOException {
+    public Elevator(final double iSpeed, final int iGapOpenClose) throws IllegalArgumentException {
         if ((iSpeed > 0) && (iGapOpenClose > 0)) {
             this.speed = iSpeed;
             this.gapOpenClose = iGapOpenClose;
         } else {
-            System.out.println("Parameters for Elevator is not correct!");
-            throw new IOException();
+            throw new IllegalArgumentException("Parameters is not correct!");
         }
     }
 
