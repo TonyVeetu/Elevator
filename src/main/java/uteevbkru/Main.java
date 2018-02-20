@@ -15,15 +15,19 @@ public class Main {
      *              4 = время между открфтием и закрфтием дверей лифта
      */
     public static void main(final String[] args) {
-        //        int countOfFloors = Integer.decode(args[0]);
-        //        int speed = Integer.decode(args[1]);
-        //        int floorHeight = Integer.decode(args[2]);
-        //        int gapOpenClose = Integer.decode(args[3]);
-
-        int countOfFloors = 5;
-        double speed = 2.3;
-        double floorHeight = 2.0;
-        int gapOpenClose = 5;
+        int countOfFloors, speed, floorHeight, gapOpenClose;
+        try {
+            countOfFloors = Integer.decode(args[0]);
+            speed = Integer.decode(args[1]);
+            floorHeight = Integer.decode(args[2]);
+            gapOpenClose = Integer.decode(args[3]);
+        } catch (NumberFormatException e){
+            System.out.println("Input data isn't Integer.");
+            return;
+        }
+        if (countOfFloors > 20 || countOfFloors < 5) {
+            throw new IllegalArgumentException("Incorrect count of Floors!");
+        }
 
         Porch porch = new Porch(countOfFloors, floorHeight);
         ElevatorOverTheGround elevatorOver = new ElevatorOverTheGround(porch, speed, gapOpenClose);

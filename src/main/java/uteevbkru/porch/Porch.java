@@ -27,7 +27,7 @@ public class Porch {
             this.maxFloor = iCountOfFloors;
             this.floorHeight = iFloorHeight;
         } else {
-            throw new IllegalArgumentException("Bad parameters for Porch!");
+            throw new IllegalArgumentException("Porch: input parameters isn't correct.");
         }
     }
 

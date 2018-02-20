@@ -27,7 +27,7 @@ public class Elevator {
             this.speed = iSpeed;
             this.gapOpenClose = iGapOpenClose;
         } else {
-            throw new IllegalArgumentException("Parameters is not correct!");
+            throw new IllegalArgumentException("Elevator: input parameters isn't correct!");
         }
     }
 
