@@ -21,14 +21,21 @@ public class Controller extends Thread {
     /** Подъезд. */
     private Porch porch;
 
-    /** Конструктор для считывания из System.in. */
+    /** Конструктор для считывания из System.in.
+     * @param elevatorOver лифт
+     * @param porch подъезд
+     */
     public Controller(final ElevatorOverTheGround elevatorOver, Porch porch) {
         this.porch = porch;
         this.elevatorOver = elevatorOver;
         scanner = new Scanner(System.in);
     }
 
-    /** Конструктор для считывания из файла. */
+    /** Конструктор для считывания из файла.
+     * @param elevatorOver лифт
+     * @param porch подъезд
+     * @param isFile считывать из файла
+     */
     public Controller(final ElevatorOverTheGround elevatorOver, Porch porch, final boolean isFile) {
         this.porch = porch;
         this.elevatorOver = elevatorOver;

@@ -6,11 +6,11 @@ package uteevbkru.porch;
  */
 
 public class Porch {
-    /** @param Минимальный этаж*/
+    /** Минимальный этаж */
     public final static int ZERO_FLOOR = 1;
-    /** @param Максимальный этаж */
+    /** Максимальный этаж */
     private int maxFloor;
-    /** @param Высота этажа */
+    /** Высота этажа */
     private double floorHeight;
 
     /**

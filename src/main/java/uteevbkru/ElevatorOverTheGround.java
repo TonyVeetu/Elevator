@@ -28,7 +28,11 @@ public class ElevatorOverTheGround extends Elevator implements Runnable {
     /** Направление движения лифта */
     private AtomicBoolean upTrip = new AtomicBoolean(true);
 
-    /** Конструктор. */
+    /** Конструктор.
+     * @param porch подъезд
+     * @param speed скорость движения лифта
+     * @param gapOpenClose интервал между открытием и закрытием дверей лифта
+     */
     public ElevatorOverTheGround(Porch porch, final double speed, final int gapOpenClose) {
         super(speed, gapOpenClose);
         this.porch = porch;
@@ -58,7 +62,8 @@ public class ElevatorOverTheGround extends Elevator implements Runnable {
     }
 
     /** Позволяет клиентам вставить этаж в очередь.
-     *  @param fromWho - от какого этажа последовал вызов
+     *  @param fromWho от какого этажа последовал вызов
+     *  @throws InterruptedException  {@inheritDoc}
      */
     public void  putInQueueForClient(final Integer fromWho) throws InterruptedException{
         if (checkFloor(fromWho)) {
