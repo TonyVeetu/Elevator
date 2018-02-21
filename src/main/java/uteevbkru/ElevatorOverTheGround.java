@@ -25,8 +25,6 @@ public class ElevatorOverTheGround extends Elevator implements Runnable {
     private long timeForOneFloor;
     /** Подъезд. */
     private Porch porch;
-    /** Коэффициент запаса. */
-    private static int Q = 10;
     /** Направление движения лифта */
     private AtomicBoolean upTrip = new AtomicBoolean(true);
 
@@ -34,12 +32,14 @@ public class ElevatorOverTheGround extends Elevator implements Runnable {
     public ElevatorOverTheGround(Porch porch, final double speed, final int gapOpenClose) {
         super(speed, gapOpenClose);
         this.porch = porch;
-        queueOfFloors = new LinkedBlockingDeque<>(porch.getMaxFloor()*Q);
+        /* Коэффициент запаса. */
+        int q = 10;
+        queueOfFloors = new LinkedBlockingDeque<>(q * porch.getMaxFloor());
         findTimeForOneFloor();
     }
 
     /** Позволяет Controller вставить этаж в очередь. */
-    public boolean putInQueueForController(Integer floor) throws InterruptedException {
+    boolean putInQueueForController(Integer floor) throws InterruptedException {
         if (checkFloor(floor)) {
             queueOfFloors.put(floor);
             return true;
@@ -67,7 +67,7 @@ public class ElevatorOverTheGround extends Elevator implements Runnable {
     }
 
     /** Расчитывает время необходимое для проезда одного этажа. */
-    public void findTimeForOneFloor() {
+    private void findTimeForOneFloor() {
         timeForOneFloor = Math.round(porch.getFloorHeight() / getSpeed()) * MS;
     }
 
@@ -77,7 +77,7 @@ public class ElevatorOverTheGround extends Elevator implements Runnable {
     }
 
     /** @return текущий этаж. */
-    public int getCurrentFloor() {
+    int getCurrentFloor() {
         return currentFloor.get();
     }
 
@@ -124,7 +124,7 @@ public class ElevatorOverTheGround extends Elevator implements Runnable {
     /** @return - следующий этаж.
      * @param upTrip направление движения лифта
      */
-    protected int getNextFloor(boolean upTrip) {
+    int getNextFloor(boolean upTrip) {
         try {
             if (upTrip) {
                 return queueOfFloors.takeFirst();
@@ -158,7 +158,7 @@ public class ElevatorOverTheGround extends Elevator implements Runnable {
     }
 
     /** @return количество этажей. */
-    public int getCountOfFloors(final int nextFloor) {
+    int getCountOfFloors(final int nextFloor) {
         return Math.abs(nextFloor - currentFloor.get());
     }
 
@@ -176,7 +176,7 @@ public class ElevatorOverTheGround extends Elevator implements Runnable {
     }
 
     /** @return время необходимое для проезда одного этажа. */
-    public long getTimeForOneFloor() {
+    long getTimeForOneFloor() {
         return timeForOneFloor;
     }
 
@@ -184,7 +184,7 @@ public class ElevatorOverTheGround extends Elevator implements Runnable {
      * Эмулирует открытие и закрытие дверей.
      * Печатает на каком этаже открылись и закрылись двери
      */
-    protected void openCloseDoors(final int floor) {
+    void openCloseDoors(final int floor) {
         try {
             System.out.println("\t"+"Open doors on "+floor+ " floor!");
             Thread.sleep(getGapOpenClose() * MS);

@@ -65,7 +65,7 @@ public class Controller extends Thread {
     }
 
     /** Превращает строковое значение этажа в число. */
-    protected Integer decodeFloor(final String str) {
+    Integer decodeFloor(final String str) {
         try {
             return Integer.decode(str);
         } catch (NumberFormatException e) { }
@@ -76,7 +76,7 @@ public class Controller extends Thread {
      * @return <code>true</code> если лимиты не привышены
      *         <code>false</code> в противном случаи
      */
-    protected boolean checkLimits(final Integer floor){
+    private boolean checkLimits(final Integer floor){
         if (floor >= Porch.ZERO_FLOOR && floor <= porch.getMaxFloor()) {
             return true;
         } else {
@@ -89,7 +89,7 @@ public class Controller extends Thread {
      * @return <code>true</code> значение вставилось
      *         <code>false</code> значение не вставилось
      */
-    protected boolean injectFloor(final Integer floor) {
+    boolean injectFloor(final Integer floor) {
         try {
             return elevatorOver.putInQueueForController(floor);
         } catch (InterruptedException e) {
