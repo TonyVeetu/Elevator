@@ -10,22 +10,12 @@ import java.util.Scanner;
  * @version 1.0.1
  *
  * Этот класс эмитируте вызов лифта на этаж.
- * Пользователю предоставляется две кнопки вызова лифта на этаж.
- * Одна кнопка стрелка вверх другая кнопка стрелка вниз.
- * Что бы проимитировать нажатие кнопки вверх, нужно ввести в консоль число >= 1.
- * Ввод в консоль числа = 0, будет приравнен к нажатию кнопки вниз!
- * При нажатии на кнопку вверх лифт не должен остановиться на этом этаже, если он двигается вниз!
- * И наоборот!
- *
- ***В версии 1.0.1 реализация алгоритма обработки запросов лифта, желаемое направление не учитывает.
- ***Но в реализации этого класса заложен двухкнопочный функционал на случай развития алгоритма лифта!
+ * Для вызова на этаж нужно ввести в консоль любое число в пределах [-Integer.MAX_VALUE+1, Integer.MAX_VALUE].
  */
 
 public class FloorClient implements Runnable{
     /** Для считывания данных из консоли. */
     private Scanner scanner;
-    /** Символ для формирования сообщения к сереверу. */
-    private final String regex = ", ";
     /** Номер этажа-клиента*/
     private int clientFloor;
 
@@ -68,17 +58,15 @@ public class FloorClient implements Runnable{
             String str = scanner.nextLine();
             int direction = checkInput(str);
             if (direction != -Integer.MAX_VALUE) {
-                boolean dir = findDirection(direction);
-                System.out.println(packMsg(dir));
-                outputStream.writeUTF(packMsg(dir));
+                outputStream.writeUTF(packMsg());
                 outputStream.flush();
             }
         }
     }
 
     /** Формирует сообщение серверу. */
-    private String packMsg(boolean direction){
-        return clientFloor + regex + direction;
+    private String packMsg(){
+        return Integer.toString(clientFloor);
     }
 
     /**
@@ -86,7 +74,7 @@ public class FloorClient implements Runnable{
      * @param str - введенный String
      * @return - число int
      */
-    protected int checkInput(final String str) {
+    private int checkInput(final String str) {
         int number = -Integer.MAX_VALUE;
         try {
             number = Integer.decode(str);
@@ -94,11 +82,6 @@ public class FloorClient implements Runnable{
             System.out.println("It isn't a number!");
         }
         return number;
-    }
-
-    /** Определяет вверх или вниз хочет поехать пользователь. */
-    protected boolean findDirection(final int floor){
-        return floor >= 1;
     }
 
     /** Устанавливает соединение с серверным сокетом. */

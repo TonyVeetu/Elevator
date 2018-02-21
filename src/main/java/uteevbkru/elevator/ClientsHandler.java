@@ -16,10 +16,6 @@ public class ClientsHandler implements Runnable {
     private Socket clientDialog;
     /** На какой этаж вызывают лифт. */
     private int fromWho;
-    /** Вверх или вниз хочет поехать пользователь. */
-    private boolean direction;
-    /** Константа для формирования сообщения. */
-    private static final String regex = ", ";
     /** Лифт. */
     private ElevatorOverTheGround elevator;
 
@@ -60,20 +56,16 @@ public class ClientsHandler implements Runnable {
      */
     private void unpackMsg(String str){
         try {
-            String prom[] = str.split(regex);
-            String fromW = prom[0];
-            String directionF = prom[1];
-            fromWho = Integer.decode(fromW);
-            direction = Boolean.parseBoolean(directionF);
+            fromWho = Integer.decode(str);
         } catch (NumberFormatException e) {
-            System.out.println("Error in unpackMsg()!");
+            System.out.println("Error in function unpackMsg()!");
         }
     }
 
     /** Передает в Лифт параметры (от кого и направление движения). */
     private void putIntoTheElevator() {
         try {
-            elevator.putInQueueForClient(fromWho, direction);
+            elevator.putInQueueForClient(fromWho);
         } catch (InterruptedException e) {
             System.out.println("Injection FloorClient for Client: " + fromWho + ", has been failed!");
         }

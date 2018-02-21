@@ -59,9 +59,8 @@ public class ElevatorOverTheGround extends Elevator implements Runnable {
 
     /** Позволяет клиентам вставить этаж в очередь.
      *  @param fromWho - от какого этажа последовал вызов
-     *  @param direction - избыточен сейчас, но может потребоваться при дальнейшем усовершенствовании алгоритма
      */
-    public void  putInQueueForClient(final Integer fromWho, final boolean direction) throws InterruptedException{
+    public void  putInQueueForClient(final Integer fromWho) throws InterruptedException{
         if (checkFloor(fromWho)) {
             queueOfFloors.put(fromWho);
         }
